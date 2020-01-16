@@ -56,8 +56,14 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         """Make a request against the API."""
         if self._token_expiration and datetime.now() >= self._token_expiration:
             _LOGGER.info("Requesting new access token to replace expired one")
+
+            # Nullify the token so that the authentication request doesn't use it:
             self._token = None
+
+            # Nullify the expiration so the authentication request doesn't get caught
+            # here:
             self._token_expiration = None
+
             await self.async_authenticate()
 
         if not headers:
