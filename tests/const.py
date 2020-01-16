@@ -1,0 +1,5 @@
+"""Define constants for use in tests."""
+TEST_EMAIL_ADDRESS = "email@address.com"
+TEST_PASSWORD = "password"
+TEST_TOKEN = "123abc"
+TEST_USER_ID = "12345abcde"
