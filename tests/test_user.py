@@ -17,8 +17,8 @@ from .fixtures import auth_success_json  # noqa
 
 
 @pytest.mark.asyncio
-async def test_get_base_user_info(aresponses, auth_success_json):
-    """Test successfully retrieving the base user info"""
+async def test_get_user_info(aresponses, auth_success_json):
+    """Test successfully retrieving user info."""
     user_info_with_alarm_settings = {
         **RESPONSE_USER_INFO_BASE,
         **RESPONSE_USER_INFO_EXPAND_ALARM_SETTINGS,
