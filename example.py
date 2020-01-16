@@ -19,6 +19,13 @@ async def main() -> None:
     async with ClientSession() as session:
         try:
             api = await async_get_api(session, EMAIL, PASSWORD)
+
+            user_info = await api.user.get_info()
+            _LOGGER.info(user_info)
+
+            first_location_id = user_info["locations"][0]["id"]
+            location_info = await api.location.get_info(first_location_id)
+            _LOGGER.info(location_info)
         except FloError as err:
             _LOGGER.error("There was an error: %s", err)
 
