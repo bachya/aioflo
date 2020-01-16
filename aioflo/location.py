@@ -2,7 +2,7 @@
 from typing import Awaitable, Callable, Optional
 
 from .const import API_V2_BASE
-from .errors import RequestError
+from .util import raise_on_invalid_argument
 
 SYSTEM_MODE_AWAY = "away"
 SYSTEM_MODE_HOME = "home"
@@ -26,8 +26,7 @@ class Location:
         self, location_id: str, mode: str, additional_payload: Optional[dict] = None
     ) -> None:
         """Set the system mode (with optional parameters)."""
-        if mode not in SYSTEM_MODES:
-            raise RequestError(f"Cannot set invalid system mode: {mode}")
+        raise_on_invalid_argument(mode, SYSTEM_MODES)
 
         payload = {"target": "mode"}
         if additional_payload:
@@ -41,6 +40,8 @@ class Location:
     ) -> dict:
         """Return user account data.
 
+        :param location_id: A Flo location UUID
+        :type location_id: ``str``
         :param include_device_info: Include expanded device information
         :type include_device_info: ``bool``
         :rtype: ``dict``
@@ -88,21 +89,8 @@ class Location:
         :param revert_mode: The mode to set after sleep concludes ("away" or "home")
         :type revert_mode: ``str``
         """
-        if revert_minutes not in SLEEP_MINUTE_OPTIONS:
-            raise RequestError(
-                (
-                    f"Cannot set invalid revert duration: {revert_minutes} "
-                    "(valid options: {SLEEP_MINUTE_OPTIONS})"
-                )
-            )
-
-        if revert_mode not in SYSTEM_REVERT_MODES:
-            raise RequestError(
-                (
-                    f"Cannot set invalid revert mode: {revert_mode} "
-                    "(valid options: {SYSTEM_REVERT_MODES})"
-                )
-            )
+        raise_on_invalid_argument(revert_minutes, SLEEP_MINUTE_OPTIONS)
+        raise_on_invalid_argument(revert_mode, SYSTEM_REVERT_MODES)
 
         await self._set_system_mode(
             location_id,
