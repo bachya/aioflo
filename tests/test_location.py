@@ -33,13 +33,13 @@ async def test_get_location_info(aresponses, auth_success_json):
         aresponses.Response(text=json.dumps(auth_success_json), status=200),
     )
     aresponses.add(
-        "api.meetflo.com",
+        "api-gw.meetflo.com",
         "/api/v2/locations/mmnnoopp",
         "get",
         aresponses.Response(text=json.dumps(RESPONSE_LOCATION_INFO_BASE), status=200),
     )
     aresponses.add(
-        "api.meetflo.com",
+        "api-gw.meetflo.com",
         "/api/v2/locations/mmnnoopp",
         "get",
         aresponses.Response(text=json.dumps(location_info_with_devices), status=200),
@@ -70,19 +70,19 @@ async def test_system_modes(aresponses, auth_success_json):
         aresponses.Response(text=json.dumps(auth_success_json), status=200),
     )
     aresponses.add(
-        "api.meetflo.com",
+        "api-gw.meetflo.com",
         "/api/v2/locations/mmnnoopp/systemMode",
         "post",
         aresponses.Response(text=None, status=204),
     )
     aresponses.add(
-        "api.meetflo.com",
+        "api-gw.meetflo.com",
         "/api/v2/locations/mmnnoopp/systemMode",
         "post",
         aresponses.Response(text=None, status=204),
     )
     aresponses.add(
-        "api.meetflo.com",
+        "api-gw.meetflo.com",
         "/api/v2/locations/mmnnoopp/systemMode",
         "post",
         aresponses.Response(text=None, status=204),

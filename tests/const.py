@@ -5,6 +5,7 @@ TEST_EMAIL_ADDRESS = "email@address.com"
 TEST_FIRST_NAME = "Tom"
 TEST_LAST_NAME = "Jones"
 TEST_LOCATION_ID = "mmnnoopp"
+TEST_MAC_ADDRESS = "12:34:56:ab:cd:ef"
 TEST_PASSWORD = "password"
 TEST_PHONE_NUMBER = "+1 123-456-7890"
 TEST_TOKEN = "123abc"
@@ -384,4 +385,52 @@ RESPONSE_USER_INFO_EXPAND_LOCATIONS = {
     "accountRole": {"accountId": TEST_ACCOUNT_ID, "roles": ["owner"]},
     "account": {"id": TEST_ACCOUNT_ID},
     "enabledFeatures": [],
+}
+
+RESPONSE_WATER_CONSUMPTION_INFO = {
+    "params": {
+        "startDate": "2020-01-16T07:00:00.000Z",
+        "endDate": "2020-01-17T06:59:59.999Z",
+        "interval": "1h",
+        "tz": "US/Mountain",
+        "locationId": TEST_LOCATION_ID,
+    },
+    "aggregations": {"sumTotalGallonsConsumed": 3.674},
+    "items": [
+        {"time": "2020-01-16T00:00:00-07:00", "gallonsConsumed": 0.04},
+        {"time": "2020-01-16T01:00:00-07:00", "gallonsConsumed": 0.477},
+        {"time": "2020-01-16T03:00:00-07:00", "gallonsConsumed": 0.442},
+        {"time": "2020-01-16T07:00:00-07:00", "gallonsConsumed": 1.216},
+        {"time": "2020-01-16T08:00:00-07:00", "gallonsConsumed": 1.499},
+    ],
+}
+
+RESPONSE_WATER_METRIC_INFO = {
+    "params": {
+        "tz": "US/Mountain",
+        "startDate": "2020-01-16T07:00:00.000Z",
+        "endDate": "2020-01-17T06:59:59.999Z",
+        "macAddress": "606405c11e10",
+        "interval": "1h",
+    },
+    "items": [
+        {
+            "time": "2020-01-16T00:00:00-07:00",
+            "averageGpm": None,
+            "averagePsi": 78.3,
+            "averageTempF": 59.4,
+        },
+        {
+            "time": "2020-01-16T01:00:00-07:00",
+            "averageGpm": None,
+            "averagePsi": 78.2,
+            "averageTempF": 59.8,
+        },
+        {
+            "time": "2020-01-16T02:00:00-07:00",
+            "averageGpm": None,
+            "averagePsi": 77.8,
+            "averageTempF": 61.4,
+        },
+    ],
 }

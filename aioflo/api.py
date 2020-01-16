@@ -2,6 +2,7 @@
 from datetime import datetime
 import logging
 from typing import Optional
+from urllib.parse import urlparse
 
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientError
@@ -9,6 +10,7 @@ from aiohttp.client_exceptions import ClientError
 from .errors import RequestError
 from .location import Location
 from .user import User
+from .water import Water
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,9 +18,8 @@ API_V1_BASE: str = "https://api.meetflo.com/api/v1"
 
 DEFAULT_HEADER_ACCEPT: str = "application/json, text/plain, */*"
 DEFAULT_HEADER_CONTENT_TYPE: str = "application/json;charset=UTF-8"
-DEFAULT_HEADER_HOST: str = "api.meetflo.com"
 DEFAULT_HEADER_ORIGIN: str = "https://user.meetflo.com"
-DEFAULT_HEADER_REFERER: str = "https://user.meetflo.com/login"
+DEFAULT_HEADER_REFERER: str = "https://user.meetflo.com/home"
 DEFAULT_HEADER_USER_AGENT: str = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36"
@@ -38,6 +39,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         self._username: str = username
 
         self.location: Location = Location(self._request)
+        self.water: Water = Water(self._request)
 
         # These endpoints will get instantiated post-authentication:
         self.user: Optional[User] = None
@@ -64,7 +66,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
             {
                 "Accept": DEFAULT_HEADER_ACCEPT,
                 "Content-Type": DEFAULT_HEADER_CONTENT_TYPE,
-                "Host": DEFAULT_HEADER_HOST,
+                "Host": urlparse(url).netloc,
                 "Origin": DEFAULT_HEADER_ORIGIN,
                 "Referer": DEFAULT_HEADER_REFERER,
                 "User-Agent": DEFAULT_HEADER_USER_AGENT,
