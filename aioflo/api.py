@@ -7,6 +7,7 @@ from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientError
 
 from .errors import RequestError
+from .location import Location
 from .user import User
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ DEFAULT_HEADER_USER_AGENT: str = (
 )
 
 
-class API:  # pylint: disable=too-few-public-methods
+class API:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Define the API object."""
 
     def __init__(self, session: ClientSession, username: str, password: str) -> None:
@@ -35,6 +36,8 @@ class API:  # pylint: disable=too-few-public-methods
         self._token_expiration: Optional[datetime] = None
         self._user_id: Optional[str] = None
         self._username: str = username
+
+        self.location: Location = Location(self._request)
 
         # These endpoints will get instantiated post-authentication:
         self.user: Optional[User] = None
