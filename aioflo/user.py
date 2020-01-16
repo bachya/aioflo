@@ -18,10 +18,10 @@ class User:  # pylint: disable=too-few-public-methods
         """Return user account data.
 
         :param include_alarm_settings: Include expanded alarm information
-        :type label: bool
+        :type label: ``bool``
         :param include_location_info: Include expanded location info
-        :type pin: bool
-        :rtype: dict
+        :type pin: ``bool``
+        :rtype: ``dict``
         """
         additional_info = []
         if include_alarm_settings:
