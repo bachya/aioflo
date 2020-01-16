@@ -1,11 +1,14 @@
 """Define a base client for interacting with Flo."""
 from datetime import datetime
+import logging
 from typing import Optional
 
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientError
 
 from .errors import RequestError
+
+_LOGGER = logging.getLogger(__name__)
 
 API_V1_BASE: str = "https://api.meetflo.com/api/v1"
 
@@ -42,6 +45,12 @@ class API:  # pylint: disable=too-few-public-methods
         json: dict = None,
     ) -> dict:
         """Make a request against the API."""
+        if self._token_expiration and datetime.now() >= self._token_expiration:
+            _LOGGER.info("Requesting new access token to replace expired one")
+            self._token = None
+            self._token_expiration = None
+            await self.async_authenticate()
+
         if not headers:
             headers = {}
         headers.update(
