@@ -1,0 +1,9 @@
+.coverage
+.mypy_cache
+.tox/
+.venv
+__pycache__/
+aioflo.egg-info
+coverage.xml
+poetry.lock
+tags
