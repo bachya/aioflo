@@ -385,3 +385,21 @@ RESPONSE_USER_INFO_EXPAND_LOCATIONS = {
     "account": {"id": TEST_ACCOUNT_ID},
     "enabledFeatures": [],
 }
+
+RESPONSE_WATER_CONSUMPTION_INFO = {
+    "params": {
+        "startDate": "2020-01-16T07:00:00.000Z",
+        "endDate": "2020-01-17T06:59:59.999Z",
+        "interval": "1h",
+        "tz": "US/Mountain",
+        "locationId": TEST_LOCATION_ID,
+    },
+    "aggregations": {"sumTotalGallonsConsumed": 3.674},
+    "items": [
+        {"time": "2020-01-16T00:00:00-07:00", "gallonsConsumed": 0.04},
+        {"time": "2020-01-16T01:00:00-07:00", "gallonsConsumed": 0.477},
+        {"time": "2020-01-16T03:00:00-07:00", "gallonsConsumed": 0.442},
+        {"time": "2020-01-16T07:00:00-07:00", "gallonsConsumed": 1.216},
+        {"time": "2020-01-16T08:00:00-07:00", "gallonsConsumed": 1.499},
+    ],
+}

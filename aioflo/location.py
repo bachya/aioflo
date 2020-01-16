@@ -42,7 +42,7 @@ class Location:
         """Return user account data.
 
         :param include_device_info: Include expanded device information
-        :type label: ``bool``
+        :type include_device_info: ``bool``
         :rtype: ``dict``
         """
         additional_info = []

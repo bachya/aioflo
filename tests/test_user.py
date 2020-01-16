@@ -36,19 +36,19 @@ async def test_get_user_info(aresponses, auth_success_json):
         aresponses.Response(text=json.dumps(auth_success_json), status=200),
     )
     aresponses.add(
-        "api.meetflo.com",
+        "api-gw.meetflo.com",
         "/api/v2/users/12345abcde",
         "get",
         aresponses.Response(text=json.dumps(RESPONSE_USER_INFO_BASE), status=200),
     )
     aresponses.add(
-        "api.meetflo.com",
+        "api-gw.meetflo.com",
         "/api/v2/users/12345abcde",
         "get",
         aresponses.Response(text=json.dumps(user_info_with_alarm_settings), status=200),
     )
     aresponses.add(
-        "api.meetflo.com",
+        "api-gw.meetflo.com",
         "/api/v2/users/12345abcde",
         "get",
         aresponses.Response(text=json.dumps(user_info_with_locations), status=200),
