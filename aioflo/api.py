@@ -101,7 +101,16 @@ class API:  # pylint: disable=too-few-public-methods
 
 
 async def async_get_api(session: ClientSession, username: str, password: str) -> API:
-    """Instantiate an authenticated API object."""
+    """Instantiate an authenticated API object.
+
+    :param session: An ``aiohttp`` ``ClientSession``
+    :type session: ``aiohttp.client.ClientSession``
+    :param email: A Flo email address
+    :type email: ``str``
+    :param password: A Flor password
+    :type password: ``str``
+    :rtype: :meth:`aioflo.api.API`
+    """
     api = API(session, username, password)
     await api.async_authenticate()
     return api
