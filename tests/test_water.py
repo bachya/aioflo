@@ -36,20 +36,18 @@ async def test_get_consumption_info(aresponses, auth_success_json):
         ),
     )
 
+    start = datetime(2020, 1, 16, 0, 0)
+    end = datetime(2020, 1, 16, 23, 59, 59, 999000)
+
     async with aiohttp.ClientSession() as session:
         api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
         consumption_info = await api.water.get_consumption_info(
-            TEST_LOCATION_ID,
-            datetime(2020, 1, 16, 0, 0),
-            datetime(2020, 1, 16, 23, 59, 59, 999000),
+            TEST_LOCATION_ID, start, end
         )
         assert consumption_info == RESPONSE_WATER_CONSUMPTION_INFO
 
         # Test various cases of using invalid parameter values in set_mode_sleep:
         with pytest.raises(RequestError):
             await api.water.get_consumption_info(
-                TEST_LOCATION_ID,
-                datetime(2020, 1, 16, 0, 0),
-                datetime(2020, 1, 16, 23, 59, 59, 999000),
-                interval="a_totally_fake_interval",
+                TEST_LOCATION_ID, start, end, interval="a_totally_fake_interval",
             )
