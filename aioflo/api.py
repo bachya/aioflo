@@ -7,6 +7,7 @@ from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientError
 
 from .errors import RequestError
+from .user import User
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,6 +35,9 @@ class API:  # pylint: disable=too-few-public-methods
         self._token_expiration: Optional[datetime] = None
         self._user_id: Optional[str] = None
         self._username: str = username
+
+        # These endpoints will get instantiated post-authentication:
+        self.user: Optional[User] = None
 
     async def _request(
         self,
@@ -90,7 +94,10 @@ class API:  # pylint: disable=too-few-public-methods
             auth_response["tokenPayload"]["timestamp"]
             + auth_response["tokenExpiration"]
         )
-        self._user_id = auth_response["tokenPayload"]["user"]["user_id"]
+
+        if not self._user_id:
+            self._user_id = auth_response["tokenPayload"]["user"]["user_id"]
+            self.user = User(self._request, self._user_id)
 
 
 async def async_get_api(session: ClientSession, username: str, password: str) -> API:
