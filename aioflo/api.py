@@ -118,7 +118,7 @@ async def async_get_api(session: ClientSession, username: str, password: str) ->
     :type session: ``aiohttp.client.ClientSession``
     :param email: A Flo email address
     :type email: ``str``
-    :param password: A Flor password
+    :param password: A Flo password
     :type password: ``str``
     :rtype: :meth:`aioflo.api.API`
     """
