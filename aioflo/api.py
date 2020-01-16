@@ -82,7 +82,7 @@ class API:  # pylint: disable=too-few-public-methods
                 raise RequestError(f"There was an error while requesting {url}: {err}")
 
     async def async_authenticate(self) -> None:
-        """Authenticate the user and retrieve an authentication token."""
+        """Authenticate the user and set the access token with its expiration."""
         auth_response: dict = await self._request(
             "post",
             f"{API_V1_BASE}/users/auth",
