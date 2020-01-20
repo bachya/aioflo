@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientError
 
+from .alarm import Alarm
 from .errors import RequestError
 from .location import Location
 from .user import User
@@ -38,6 +39,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         self._user_id: Optional[str] = None
         self._username: str = username
 
+        self.alarm: Alarm = Alarm(self._request)
         self.location: Location = Location(self._request)
         self.water: Water = Water(self._request)
 
