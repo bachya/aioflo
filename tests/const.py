@@ -11,6 +11,67 @@ TEST_PHONE_NUMBER = "+1 123-456-7890"
 TEST_TOKEN = "123abc"
 TEST_USER_ID = "12345abcde"
 
+RESPONSE_ALARMS = {
+    "items": [
+        {
+            "id": 3,
+            "name": "health_test_skipped",
+            "displayName": "Health Test Skipped",
+            "description": "Health Test Skipped",
+            "severity": "info",
+            "isInternal": False,
+            "isShutoff": False,
+            "sendWhenValveIsClosed": True,
+            "userActions": {
+                "displayTitle": "Clear this Alert",
+                "displayDescription": "Do you want to ignore this alert if it happens again?",
+                "actions": [],
+            },
+            "actions": [],
+            "supportOptions": [],
+            "active": False,
+            "children": [],
+            "deliveryMedium": {
+                "userConfigurable": False,
+                "sms": {
+                    "supported": True,
+                    "defaultSettings": [
+                        {"systemMode": "home", "enabled": False, "supported": True},
+                        {"systemMode": "away", "enabled": False, "supported": True},
+                        {"systemMode": "sleep", "enabled": False, "supported": True},
+                    ],
+                },
+                "email": {
+                    "supported": True,
+                    "defaultSettings": [
+                        {"systemMode": "home", "enabled": True, "supported": True},
+                        {"systemMode": "away", "enabled": True, "supported": True},
+                        {"systemMode": "sleep", "enabled": True, "supported": True},
+                    ],
+                },
+                "push": {
+                    "supported": True,
+                    "defaultSettings": [
+                        {"systemMode": "home", "enabled": True, "supported": True},
+                        {"systemMode": "away", "enabled": True, "supported": True},
+                        {"systemMode": "sleep", "enabled": True, "supported": True},
+                    ],
+                },
+                "call": {
+                    "supported": False,
+                    "defaultSettings": [
+                        {"systemMode": "home", "enabled": False, "supported": False},
+                        {"systemMode": "away", "enabled": False, "supported": False},
+                        {"systemMode": "sleep", "enabled": False, "supported": False},
+                    ],
+                },
+            },
+            "tags": [],
+            "userFeedbackFlow": [],
+        }
+    ]
+}
+
 RESPONSE_LOCATION_INFO_BASE = {
     "id": TEST_LOCATION_ID,
     "users": [{"id": TEST_USER_ID}],
