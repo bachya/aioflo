@@ -1,0 +1,108 @@
+{
+  "items": [
+    {
+      "id": 3,
+      "name": "health_test_skipped",
+      "displayName": "Health Test Skipped",
+      "description": "Health Test Skipped",
+      "severity": "info",
+      "isInternal": false,
+      "isShutoff": false,
+      "sendWhenValveIsClosed": true,
+      "userActions": {
+        "displayTitle": "Clear this Alert",
+        "displayDescription": "Do you want to ignore this alert if it happens again?",
+        "actions": []
+      },
+      "actions": [],
+      "supportOptions": [],
+      "active": false,
+      "children": [],
+      "deliveryMedium": {
+        "userConfigurable": false,
+        "sms": {
+          "supported": true,
+          "defaultSettings": [
+            {
+              "systemMode": "home",
+              "enabled": false,
+              "supported": true
+            },
+            {
+              "systemMode": "away",
+              "enabled": false,
+              "supported": true
+            },
+            {
+              "systemMode": "sleep",
+              "enabled": false,
+              "supported": true
+            }
+          ]
+        },
+        "email": {
+          "supported": true,
+          "defaultSettings": [
+            {
+              "systemMode": "home",
+              "enabled": true,
+              "supported": true
+            },
+            {
+              "systemMode": "away",
+              "enabled": true,
+              "supported": true
+            },
+            {
+              "systemMode": "sleep",
+              "enabled": true,
+              "supported": true
+            }
+          ]
+        },
+        "push": {
+          "supported": true,
+          "defaultSettings": [
+            {
+              "systemMode": "home",
+              "enabled": true,
+              "supported": true
+            },
+            {
+              "systemMode": "away",
+              "enabled": true,
+              "supported": true
+            },
+            {
+              "systemMode": "sleep",
+              "enabled": true,
+              "supported": true
+            }
+          ]
+        },
+        "call": {
+          "supported": false,
+          "defaultSettings": [
+            {
+              "systemMode": "home",
+              "enabled": false,
+              "supported": false
+            },
+            {
+              "systemMode": "away",
+              "enabled": false,
+              "supported": false
+            },
+            {
+              "systemMode": "sleep",
+              "enabled": false,
+              "supported": false
+            }
+          ]
+        }
+      },
+      "tags": [],
+      "userFeedbackFlow": []
+    }
+  ]
+}

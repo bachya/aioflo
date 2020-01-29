@@ -1,0 +1,72 @@
+{
+  "id": "12345abcde",
+  "email": "email@address.com",
+  "isActive": true,
+  "firstName": "Tom",
+  "lastName": "Jones",
+  "unitSystem": "imperial_us",
+  "phoneMobile": "+1 123-456-7890",
+  "locale": "en-US",
+  "locations": [
+    {
+      "id": "mmnnoopp"
+    }
+  ],
+  "alarmSettings": [
+    {
+      "deviceId": "98765",
+      "settings": [
+        {
+          "alarmId": 4,
+          "systemMode": "home",
+          "smsEnabled": false
+        },
+        {
+          "alarmId": 5,
+          "systemMode": "away",
+          "smsEnabled": false
+        },
+        {
+          "alarmId": 4,
+          "systemMode": "away",
+          "smsEnabled": false
+        },
+        {
+          "alarmId": 4,
+          "systemMode": "sleep",
+          "smsEnabled": false
+        },
+        {
+          "alarmId": 5,
+          "systemMode": "home",
+          "smsEnabled": false
+        },
+        {
+          "alarmId": 5,
+          "systemMode": "sleep",
+          "smsEnabled": false
+        }
+      ],
+      "floSenseLevel": 5,
+      "smallDripSensitivity": 4
+    }
+  ],
+  "locationRoles": [
+    {
+      "locationId": "mmnnoopp",
+      "roles": [
+        "owner"
+      ]
+    }
+  ],
+  "accountRole": {
+    "accountId": "aabbccdd",
+    "roles": [
+      "owner"
+    ]
+  },
+  "account": {
+    "id": "aabbccdd"
+  },
+  "enabledFeatures": []
+}
