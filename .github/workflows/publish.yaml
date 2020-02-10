@@ -38,7 +38,6 @@ jobs:
           python-version: 3.7
 
       - name: Publish to PyPI
-        uses: abatilo/actions-poetry@v1.5.0
-        with:
-          python_version: 3.7.0
-          args: publish --build -u __token__ -p ${{ secrets.PYPI_API_KEY }}
+        run: |
+          pip install poetry
+          poetry publish --build -u __token__ -p  ${{ secrets.PYPI_API_KEY }}
