@@ -75,7 +75,7 @@ jobs:
           python-version: "3.x"
           architecture: x64
 
-        run: |
+      - run: |
           python -m venv venv
           venv/bin/pip install pre-commit
           venv/bin/pre-commit install-hooks --config .pre-commit-config.yaml
