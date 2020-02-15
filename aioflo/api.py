@@ -76,7 +76,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
                 "Content-Type": DEFAULT_HEADER_CONTENT_TYPE,
                 "Host": urlparse(url).netloc,
                 "Origin": DEFAULT_HEADER_ORIGIN,
-                "Referer": DEFAULT_HEADER_REFERER,
+                "Referrer": DEFAULT_HEADER_REFERER,
                 "User-Agent": DEFAULT_HEADER_USER_AGENT,
             }
         )
