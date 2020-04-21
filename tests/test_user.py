@@ -45,7 +45,7 @@ async def test_get_user_info(aresponses, auth_success_response):
     )
 
     async with aiohttp.ClientSession() as session:
-        api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         user_info = await api.user.get_info()
         assert user_info["email"] == "email@address.com"
         assert not user_info["alarmSettings"]

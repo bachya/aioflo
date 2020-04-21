@@ -39,7 +39,7 @@ async def test_get_consumption_info(aresponses, auth_success_response):
     end = datetime(2020, 1, 16, 23, 59, 59, 999000)
 
     async with aiohttp.ClientSession() as session:
-        api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         consumption_info = await api.water.get_consumption_info(
             TEST_LOCATION_ID, start, end
         )
@@ -74,7 +74,7 @@ async def test_get_metrics(aresponses, auth_success_response):
     end = datetime(2020, 1, 16, 23, 59, 59, 999000)
 
     async with aiohttp.ClientSession() as session:
-        api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         metrics = await api.water.get_metrics(TEST_MAC_ADDRESS, start, end)
         assert len(metrics["items"]) == 3
 
