@@ -37,7 +37,7 @@ async def test_get_location_info(aresponses, auth_success_response):
     )
 
     async with aiohttp.ClientSession() as session:
-        api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         location_info = await api.location.get_info(TEST_LOCATION_ID)
         assert location_info["address"] == "123 Main Street"
         assert len(location_info["devices"]) == 1
@@ -83,7 +83,7 @@ async def test_system_modes(aresponses, auth_success_response):
     )
 
     async with aiohttp.ClientSession() as session:
-        api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
 
         await api.location.set_mode_away(TEST_LOCATION_ID)
         await api.location.set_mode_home(TEST_LOCATION_ID)

@@ -30,7 +30,7 @@ async def test_bad_api_call(aresponses, auth_success_response):
     )
 
     async with aiohttp.ClientSession() as session:
-        api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         with pytest.raises(RequestError):
             await api._request("get", "https://api.meetflo.com/api/v1/bad")
 
@@ -60,7 +60,7 @@ async def test_expired_api_token(aresponses, auth_success_response, caplog):
     )
 
     async with aiohttp.ClientSession() as session:
-        api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         print(api._token_expiration)
         api._token_expiration = datetime.now() - timedelta(days=1)
         print(api._token_expiration)
@@ -79,6 +79,6 @@ async def test_get_api(aresponses, auth_success_response):
     )
 
     async with aiohttp.ClientSession() as session:
-        api = await async_get_api(session, TEST_EMAIL_ADDRESS, TEST_PASSWORD)
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         assert api._token == TEST_TOKEN
         assert api._user_id == TEST_USER_ID

@@ -4,7 +4,7 @@ import logging
 from typing import Optional
 from urllib.parse import urlparse
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 from aiohttp.client_exceptions import ClientError
 
 from .alarm import Alarm
@@ -25,12 +25,15 @@ DEFAULT_HEADER_USER_AGENT: str = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36"
 )
+DEFAULT_TIMEOUT: int = 10
 
 
 class API:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Define the API object."""
 
-    def __init__(self, session: ClientSession, username: str, password: str) -> None:
+    def __init__(
+        self, username: str, password: str, *, session: Optional[ClientSession] = None
+    ) -> None:
         """Initialize."""
         self._password: str = password
         self._session: ClientSession = session
@@ -68,9 +71,8 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
 
             await self.async_authenticate()
 
-        if not headers:
-            headers = {}
-        headers.update(
+        _headers = headers or {}
+        _headers.update(
             {
                 "Accept": DEFAULT_HEADER_ACCEPT,
                 "Content-Type": DEFAULT_HEADER_CONTENT_TYPE,
@@ -82,17 +84,27 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         )
 
         if self._token:
-            headers["Authorization"] = self._token
+            _headers["Authorization"] = self._token
 
-        async with self._session.request(
-            method, url, headers=headers, params=params, json=json
-        ) as resp:
-            data: dict = await resp.json(content_type=None)
-            try:
+        use_running_session = self._session and not self._session.closed
+
+        if use_running_session:
+            session = self._session
+        else:
+            session = ClientSession(timeout=ClientTimeout(total=DEFAULT_TIMEOUT))
+
+        try:
+            async with session.request(
+                method, url, headers=_headers, params=params, json=json
+            ) as resp:
+                data: dict = await resp.json(content_type=None)
                 resp.raise_for_status()
                 return data
-            except ClientError as err:
-                raise RequestError(f"There was an error while requesting {url}: {err}")
+        except ClientError as err:
+            raise RequestError(f"There was an error while requesting {url}: {err}")
+        finally:
+            if not use_running_session:
+                await session.close()
 
     async def async_authenticate(self) -> None:
         """Authenticate the user and set the access token with its expiration."""
@@ -113,7 +125,9 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
             self.user = User(self._request, self._user_id)
 
 
-async def async_get_api(session: ClientSession, username: str, password: str) -> API:
+async def async_get_api(
+    username: str, password: str, *, session: Optional[ClientSession] = None
+) -> API:
     """Instantiate an authenticated API object.
 
     :param session: An ``aiohttp`` ``ClientSession``
@@ -124,6 +138,6 @@ async def async_get_api(session: ClientSession, username: str, password: str) ->
     :type password: ``str``
     :rtype: :meth:`aioflo.api.API`
     """
-    api = API(session, username, password)
+    api = API(username, password, session=session)
     await api.async_authenticate()
     return api

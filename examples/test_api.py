@@ -10,8 +10,8 @@ from aioflo.errors import FloError
 
 _LOGGER = logging.getLogger()
 
-EMAIL = "jwilhelmy@gmail.com"
-PASSWORD = "Jo3rulez"
+EMAIL = "<EMAIL>"
+PASSWORD = "<PASSWORD>"
 
 
 async def main() -> None:
@@ -19,7 +19,7 @@ async def main() -> None:
     logging.basicConfig(level=logging.INFO)
     async with ClientSession() as session:
         try:
-            api = await async_get_api(session, EMAIL, PASSWORD)
+            api = await async_get_api(EMAIL, PASSWORD, session=session)
 
             user_info = await api.user.get_info()
             _LOGGER.info(user_info)
@@ -38,4 +38,4 @@ async def main() -> None:
             _LOGGER.error("There was an error: %s", err)
 
 
-asyncio.get_event_loop().run_until_complete(main())
+asyncio.run(main())
