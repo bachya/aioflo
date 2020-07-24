@@ -8,6 +8,7 @@ from aiohttp import ClientSession, ClientTimeout
 from aiohttp.client_exceptions import ClientError
 
 from .alarm import Alarm
+from .device import Device
 from .errors import RequestError
 from .location import Location
 from .user import User
@@ -45,6 +46,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         self.alarm: Alarm = Alarm(self._request)
         self.location: Location = Location(self._request)
         self.water: Water = Water(self._request)
+        self.device: Device = Device(self._request)
 
         # These endpoints will get instantiated post-authentication:
         self.user: Optional[User] = None
