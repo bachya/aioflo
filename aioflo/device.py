@@ -1,5 +1,5 @@
 """Define /device endpoints."""
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable
 
 from .const import API_V2_BASE
 
