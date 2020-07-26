@@ -46,6 +46,19 @@ async def main() -> None:
     # Get location (i.e., device) information:
     location_info = await api.location.get_info(a_location_id)
 
+    # Get device information
+    first_device_id = location_info["devices"][0]["id"]
+    device_info = await api.device.get_info(first_device_id)
+
+    # Run a health test
+    health_test_response = await api.device.run_health_test(first_device_id)
+
+    # Close the shutoff valve
+    close_valve_response = await api.device.close_valve(first_device_id)
+
+    # Open the shutoff valve
+    open_valve_response = await api.device.open_valve(first_device_id)
+
     # Get consumption info between a start and end datetime:
     consumption_info = await api.water.get_consumption_info(
         a_location_id,
@@ -98,6 +111,19 @@ async def main() -> None:
 
         # Get location (i.e., device) information:
         location_info = await api.location.get_info(a_location_id)
+
+        # Get device information
+        first_device_id = location_info["devices"][0]["id"]
+        device_info = await api.device.get_info(first_device_id)
+
+        # Run a health test
+        health_test_response = await api.device.run_health_test(first_device_id)
+
+        # Close the shutoff valve
+        close_valve_response = await api.device.close_valve(first_device_id)
+
+        # Open the shutoff valve
+        open_valve_response = await api.device.open_valve(first_device_id)
 
         # Get consumption info between a start and end datetime:
         consumption_info = await api.water.get_consumption_info(
