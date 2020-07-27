@@ -28,7 +28,7 @@ class Location:
         """Set the system mode (with optional parameters)."""
         raise_on_invalid_argument(mode, SYSTEM_MODES)
 
-        payload = {"target": "mode"}
+        payload = {"target": mode}
         if additional_payload:
             payload = {**payload, **additional_payload}
         await self._request(
