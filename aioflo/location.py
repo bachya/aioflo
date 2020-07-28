@@ -28,7 +28,7 @@ class Location:
         """Set the system mode (with optional parameters)."""
         raise_on_invalid_argument(mode, SYSTEM_MODES)
 
-        payload = {"target": "mode"}
+        payload = {"target": mode}
         if additional_payload:
             payload = {**payload, **additional_payload}
         await self._request(
@@ -94,9 +94,9 @@ class Location:
 
         await self._set_system_mode(
             location_id,
-            SYSTEM_MODE_HOME,
+            SYSTEM_MODE_SLEEP,
             additional_payload={
                 "revertMinutes": revert_minutes,
-                "revert_mode": revert_mode,
+                "revertMode": revert_mode,
             },
         )
