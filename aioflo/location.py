@@ -94,9 +94,9 @@ class Location:
 
         await self._set_system_mode(
             location_id,
-            SYSTEM_MODE_HOME,
+            SYSTEM_MODE_SLEEP,
             additional_payload={
                 "revertMinutes": revert_minutes,
-                "revert_mode": revert_mode,
+                "revertMode": revert_mode,
             },
         )
