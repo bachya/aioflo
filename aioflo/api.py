@@ -51,15 +51,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         # These endpoints will get instantiated post-authentication:
         self.user: Optional[User] = None
 
-    async def _request(
-        self,
-        method: str,
-        url: str,
-        *,
-        headers: dict = None,
-        params: dict = None,
-        json: dict = None,
-    ) -> dict:
+    async def _request(self, method: str, url: str, **kwargs) -> dict:
         """Make a request against the API."""
         if self._token_expiration and datetime.now() >= self._token_expiration:
             _LOGGER.info("Requesting new access token to replace expired one")
@@ -73,8 +65,8 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
 
             await self.async_authenticate()
 
-        _headers = headers or {}
-        _headers.update(
+        kwargs.setdefault("headers", {})
+        kwargs["headers"].update(
             {
                 "Accept": DEFAULT_HEADER_ACCEPT,
                 "Content-Type": DEFAULT_HEADER_CONTENT_TYPE,
@@ -86,7 +78,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         )
 
         if self._token:
-            _headers["Authorization"] = self._token
+            kwargs["headers"]["Authorization"] = self._token
 
         use_running_session = self._session and not self._session.closed
 
@@ -96,14 +88,12 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
             session = ClientSession(timeout=ClientTimeout(total=DEFAULT_TIMEOUT))
 
         try:
-            async with session.request(
-                method, url, headers=_headers, params=params, json=json
-            ) as resp:
+            async with session.request(method, url, **kwargs) as resp:
                 data: dict = await resp.json(content_type=None)
                 resp.raise_for_status()
                 return data
         except ClientError as err:
-            raise RequestError(f"There was an error while requesting {url}: {err}")
+            raise RequestError(f"There was an error while requesting {url}") from err
         finally:
             if not use_running_session:
                 await session.close()
