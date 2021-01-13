@@ -19,7 +19,7 @@ use_parentheses = true
 
 [tool.poetry]
 name = "aioflo"
-version = "0.4.1"
+version = "0.4.2"
 description = "A Python3, async-friendly library for Flo by Moen Smart Water Detectors"
 readme = "README.md"
 authors = ["Aaron Bach <bachya1208@gmail.com>"]
