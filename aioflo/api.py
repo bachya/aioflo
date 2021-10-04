@@ -114,6 +114,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
 
         if not self._user_id:
             self._user_id = auth_response["tokenPayload"]["user"]["user_id"]
+            assert self._user_id
             self.user = User(self._request, self._user_id)
 
 

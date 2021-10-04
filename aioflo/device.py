@@ -13,6 +13,7 @@ class Device:  # pylint: disable=too-few-public-methods
 
     async def get_info(self, device_id: str) -> dict:
         """Return device specific data.
+
         :param device_id: Unique identifier for the device
         :type device_id: ``str``
         :rtype: ``dict``
@@ -21,6 +22,7 @@ class Device:  # pylint: disable=too-few-public-methods
 
     async def run_health_test(self, device_id: str) -> None:
         """Run a health test for a specific device.
+
         :param device_id: Unique identifier for the device
         :type device_id: ``str``
         :rtype: ``dict``
@@ -31,6 +33,7 @@ class Device:  # pylint: disable=too-few-public-methods
 
     async def open_valve(self, device_id: str) -> None:
         """Open the valve for a specific device.
+
         :param device_id: Unique identifier for the device
         :type device_id: ``str``
         :rtype: ``dict``
@@ -43,6 +46,7 @@ class Device:  # pylint: disable=too-few-public-methods
 
     async def close_valve(self, device_id: str) -> None:
         """Close the valve for a specific device.
+
         :param device_id: Unique identifier for the device
         :type device_id: ``str``
         :rtype: ``dict``
