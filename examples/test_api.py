@@ -48,6 +48,9 @@ async def main() -> None:
             open_valve_response = await api.device.open_valve(first_device_id)
             _LOGGER.info(open_valve_response)
 
+            ping_response = await api.presence.ping()
+            _LOGGER.info(ping_response)
+
         except FloError as err:
             _LOGGER.error("There was an error: %s", err)
 

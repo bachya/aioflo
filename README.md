@@ -107,6 +107,9 @@ async def main() -> None:
     async with ClientSession() as websession:
         api = await async_get_api("<EMAIL>", "<PASSWORD>", session=session)
 
+        # Tell Flo to get updated data from the device
+        ping_response = await api.presence.ping()
+
         # Get user account information:
         user_info = await api.user.get_info()
         a_location_id = user_info["locations"][0]["id"]

@@ -11,6 +11,7 @@ from .alarm import Alarm
 from .device import Device
 from .errors import RequestError
 from .location import Location
+from .presence import Presence
 from .user import User
 from .water import Water
 
@@ -47,6 +48,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         self.location: Location = Location(self._request)
         self.water: Water = Water(self._request)
         self.device: Device = Device(self._request)
+        self.presence: Presence = Presence(self._request)
 
         # These endpoints will get instantiated post-authentication:
         self.user: Optional[User] = None
