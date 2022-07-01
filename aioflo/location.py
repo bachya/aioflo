@@ -36,7 +36,9 @@ class Location:
         )
 
     async def get_info(
-        self, location_id: str, include_device_info: bool = False,
+        self,
+        location_id: str,
+        include_device_info: bool = False,
     ) -> dict:
         """Return user account data.
 
