@@ -48,7 +48,10 @@ async def test_get_consumption_info(aresponses, auth_success_response):
         # Test various cases of using invalid parameter values in set_mode_sleep:
         with pytest.raises(RequestError):
             await api.water.get_consumption_info(
-                TEST_LOCATION_ID, start, end, interval="a_totally_fake_interval",
+                TEST_LOCATION_ID,
+                start,
+                end,
+                interval="a_totally_fake_interval",
             )
 
 
@@ -81,5 +84,8 @@ async def test_get_metrics(aresponses, auth_success_response):
         # Test various cases of using invalid parameter values in set_mode_sleep:
         with pytest.raises(RequestError):
             await api.water.get_metrics(
-                TEST_MAC_ADDRESS, start, end, interval="a_totally_fake_interval",
+                TEST_MAC_ADDRESS,
+                start,
+                end,
+                interval="a_totally_fake_interval",
             )
