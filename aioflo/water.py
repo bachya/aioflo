@@ -8,7 +8,7 @@ from .util import raise_on_invalid_argument
 INTERVAL_DAILY = "1d"
 INTERVAL_HOURLY = "1h"
 INTERVAL_MONTHLY = "1m"
-INTERVALS = set([INTERVAL_DAILY, INTERVAL_HOURLY, INTERVAL_MONTHLY])
+INTERVALS = {INTERVAL_DAILY, INTERVAL_HOURLY, INTERVAL_MONTHLY}
 
 
 class Water:  # pylint: disable=too-few-public-methods

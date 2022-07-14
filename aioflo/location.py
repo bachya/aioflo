@@ -7,12 +7,12 @@ from .util import raise_on_invalid_argument
 SYSTEM_MODE_AWAY = "away"
 SYSTEM_MODE_HOME = "home"
 SYSTEM_MODE_SLEEP = "sleep"
-SYSTEM_MODES = set([SYSTEM_MODE_AWAY, SYSTEM_MODE_HOME, SYSTEM_MODE_SLEEP])
-SYSTEM_REVERT_MODES = set([SYSTEM_MODE_AWAY, SYSTEM_MODE_HOME])
+SYSTEM_MODES = {SYSTEM_MODE_AWAY, SYSTEM_MODE_HOME, SYSTEM_MODE_SLEEP}
+SYSTEM_REVERT_MODES = {SYSTEM_MODE_AWAY, SYSTEM_MODE_HOME}
 
 # The Flo web app hardcodes sleep durations to certain intervals; testing seems to
 # indicate that those are the only valid values, so we stick with them:
-SLEEP_MINUTE_OPTIONS = set([120, 1440, 4320])
+SLEEP_MINUTE_OPTIONS = {120, 1440, 4320}
 
 
 class Location:
