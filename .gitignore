@@ -8,3 +8,7 @@ coverage.xml
 poetry.lock
 tags
 .DS_Store
+
+# Test files (may contain credentials)
+test_*.py
+!tests/test_*.py
