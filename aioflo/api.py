@@ -157,9 +157,12 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
 
         # Parse expiration from ISO format or use expires_in
         if "expires_at" in auth_response:
-            self._token_expiration = datetime.fromisoformat(
+            # Parse timezone-aware datetime and convert to naive local time
+            expires_at = datetime.fromisoformat(
                 auth_response["expires_at"].replace("Z", "+00:00")
             )
+            # Convert to naive datetime for consistency with legacy auth
+            self._token_expiration = expires_at.replace(tzinfo=None)
         else:
             # Fallback: use expires_in seconds
             self._token_expiration = datetime.now() + timedelta(
@@ -178,6 +181,9 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
 
         _LOGGER.info("Refreshing access token using refresh token")
 
+        # Temporarily clear expiration to prevent infinite recursion during refresh
+        self._token_expiration = None
+
         auth_response: dict = await self._request(
             "post",
             OAUTH2_TOKEN_ENDPOINT,
@@ -194,9 +200,12 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
 
         # Parse expiration from ISO format or use expires_in
         if "expires_at" in auth_response:
-            self._token_expiration = datetime.fromisoformat(
+            # Parse timezone-aware datetime and convert to naive local time
+            expires_at = datetime.fromisoformat(
                 auth_response["expires_at"].replace("Z", "+00:00")
             )
+            # Convert to naive datetime for consistency with legacy auth
+            self._token_expiration = expires_at.replace(tzinfo=None)
         else:
             # Fallback: use expires_in seconds
             self._token_expiration = datetime.now() + timedelta(
