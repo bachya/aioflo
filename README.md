@@ -88,13 +88,13 @@ async def main() -> None:
     )
 
     # Set the device in "Away" mode:
-    await set_mode_away(a_location_id)
+    await api.location.set_mode_away(a_location_id)
 
     # Set the device in "Home" mode:
-    await set_mode_home(a_location_id)
+    await api.location.set_mode_home(a_location_id)
 
     # Set the device in "Sleep" mode for 120 minutes, then return to "Away" mode:
-    await set_mode_sleep(a_location_id, 120, "away")
+    await api.location.set_mode_sleep(a_location_id, 120, "away")
 
 
 asyncio.run(main())
@@ -117,7 +117,7 @@ from aioflo import async_get_api
 async def main() -> None:
     """Create the aiohttp session and run the example."""
     async with ClientSession() as websession:
-        api = await async_get_api("<EMAIL>", "<PASSWORD>", session=session)
+        api = await async_get_api("<EMAIL>", "<PASSWORD>", session=websession)
 
         # Tell Flo to get updated data from the device
         ping_response = await api.presence.ping()
@@ -157,13 +157,13 @@ async def main() -> None:
         )
 
         # Set the device in "Away" mode:
-        await set_mode_away(a_location_id)
+        await api.location.set_mode_away(a_location_id)
 
         # Set the device in "Home" mode:
-        await set_mode_home(a_location_id)
+        await api.location.set_mode_home(a_location_id)
 
         # Set the device in "Sleep" mode for 120 minutes, then return to "Away" mode:
-        await set_mode_sleep(a_location_id, 120, "away")
+        await api.location.set_mode_sleep(a_location_id, 120, "away")
 
 
 asyncio.run(main())
