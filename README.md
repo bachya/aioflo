@@ -27,6 +27,18 @@
 pip install aioflo
 ```
 
+# Authentication
+
+The library uses OAuth2 authentication with the Moen Flo API. Authentication is handled automatically when you call `async_get_api()` - simply provide your Flo account username (email) and password.
+
+**Features:**
+- Automatic OAuth2 authentication with token refresh
+- Backward compatible fallback to legacy authentication if OAuth2 is unavailable
+- Tokens are automatically refreshed when they expire (every 24 hours)
+- Credentials are only sent during initial authentication and when refresh fails
+
+**Note:** The library uses shared application credentials for OAuth2 (hardcoded in the Moen Flo mobile app). You only need to provide your Flo account username and password.
+
 # Usage
 
 ```python

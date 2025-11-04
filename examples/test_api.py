@@ -19,6 +19,9 @@ async def main() -> None:
     logging.basicConfig(level=logging.INFO)
     async with ClientSession() as session:
         try:
+            # Get an authenticated API instance
+            # OAuth2 authentication is used by default with automatic token refresh
+            # Falls back to legacy authentication if OAuth2 is unavailable
             api = await async_get_api(EMAIL, PASSWORD, session=session)
 
             user_info = await api.user.get_info()

@@ -65,7 +65,7 @@ async def test_expired_api_token(aresponses, auth_success_response, caplog):
         api._token_expiration = datetime.now() - timedelta(days=1)
         print(api._token_expiration)
         await api._request("get", "https://api.meetflo.com/api/v1/random_good_endpoint")
-        assert any("Requesting new access token" in e.message for e in caplog.records)
+        assert any("Access token expired, attempting to refresh" in e.message for e in caplog.records)
 
 
 @pytest.mark.asyncio

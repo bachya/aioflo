@@ -13,6 +13,10 @@ TEST_PHONE_NUMBER = "+1 123-456-7890"
 TEST_TOKEN = "123abc"
 TEST_USER_ID = "12345abcde"
 
+# OAuth2 test constants
+TEST_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test_access_token"
+TEST_REFRESH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test_refresh_token"
+
 
 def load_fixture(filename):
     """Load a fixture."""
