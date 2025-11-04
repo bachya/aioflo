@@ -13,7 +13,10 @@ class User:  # pylint: disable=too-few-public-methods
         self._user_id: str = user_id
 
     async def get_info(
-        self, include_alarm_settings: bool = False, include_location_info: bool = False
+        self,
+        include_alarm_settings: bool = False,
+        include_location_info: bool = False,
+        include_account: bool = False,
     ) -> dict:
         """Return user account data.
 
@@ -21,6 +24,8 @@ class User:  # pylint: disable=too-few-public-methods
         :type include_alarm_settings: ``bool``
         :param include_location_info: Include expanded location info
         :type include_location_info: ``bool``
+        :param include_account: Include expanded account information
+        :type include_account: ``bool``
         :rtype: ``dict``
         """
         additional_info = []
@@ -28,6 +33,8 @@ class User:  # pylint: disable=too-few-public-methods
             additional_info.append("alarmSettings")
         if include_location_info:
             additional_info.append("locations")
+        if include_account:
+            additional_info.append("account")
 
         params = {}
         if additional_info:

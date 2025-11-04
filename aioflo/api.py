@@ -8,6 +8,7 @@ from aiohttp import ClientSession, ClientTimeout
 from aiohttp.client_exceptions import ClientError
 
 from .alarm import Alarm
+from .alert import Alert
 from .const import (
     API_V1_BASE,
     OAUTH2_CLIENT_ID,
@@ -69,6 +70,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         self._use_oauth2: bool = True  # Try OAuth2 first, fallback to old auth
 
         self.alarm: Alarm = Alarm(self._request)
+        self.alert: Alert = Alert(self._request)
         self.location: Location = Location(self._request)
         self.water: Water = Water(self._request)
         self.device: Device = Device(self._request)

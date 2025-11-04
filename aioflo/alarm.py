@@ -11,6 +11,12 @@ class Alarm:  # pylint: disable=too-few-public-methods
         """Initialize."""
         self._request: Callable[..., Awaitable] = request
 
-    async def get_all(self):
-        """Get all alarms."""
-        return await self._request("get", f"{API_V2_BASE}/alarms")
+    async def get_all(self, lang: str = "en"):
+        """Get all alarms.
+
+        :param lang: Language code for alarm messages (default: "en")
+        :type lang: ``str``
+        :rtype: ``dict``
+        """
+        params = {"lang": lang}
+        return await self._request("get", f"{API_V2_BASE}/alarms", params=params)
