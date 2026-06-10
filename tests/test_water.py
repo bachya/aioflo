@@ -34,6 +34,14 @@ async def test_get_consumption_info(aresponses, auth_success_response):
             text=load_fixture("water_consumption_info_response.json"), status=200
         ),
     )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/water/consumption",
+        "get",
+        aresponses.Response(
+            text=load_fixture("water_consumption_info_response.json"), status=200
+        ),
+    )
 
     start = datetime(2020, 1, 16, 0, 0)
     end = datetime(2020, 1, 16, 23, 59, 59, 999000)
@@ -42,6 +50,11 @@ async def test_get_consumption_info(aresponses, auth_success_response):
         api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         consumption_info = await api.water.get_consumption_info(
             TEST_LOCATION_ID, start, end
+        )
+        assert len(consumption_info["items"]) == 5
+
+        consumption_info = await api.water.get_consumption_info(
+            TEST_LOCATION_ID, start, end, device_mac_address=TEST_MAC_ADDRESS
         )
         assert len(consumption_info["items"]) == 5
 
