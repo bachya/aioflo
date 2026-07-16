@@ -1,5 +1,5 @@
 """Define a base client for interacting with Flo."""
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 from typing import Optional
 from urllib.parse import urlparse
@@ -18,6 +18,15 @@ from .water import Water
 _LOGGER = logging.getLogger(__name__)
 
 API_V1_BASE: str = "https://api.meetflo.com/api/v1"
+API_V2_BASE: str = "https://api-gw.meetflo.com/api/v2"
+
+# Moen SSO (Cognito) auth. As of 2025, Flo accounts migrated to the Moen "Smart Water
+# Network" identity now authenticate here, and api-gw rejects the legacy v1 token with
+# 401. See ``use_sso``.
+SSO_TOKEN_URL: str = (
+    "https://4j1gkf0vji.execute-api.us-east-2.amazonaws.com/prod/v1/oauth2/token"
+)
+SSO_CLIENT_ID: str = "6qn9pep31dglq6ed4fvlq6rp5t"
 
 DEFAULT_HEADER_ACCEPT: str = "application/json, text/plain, */*"
 DEFAULT_HEADER_CONTENT_TYPE: str = "application/json;charset=UTF-8"
@@ -34,13 +43,25 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
     """Define the API object."""
 
     def __init__(
-        self, username: str, password: str, *, session: Optional[ClientSession] = None
+        self,
+        username: str,
+        password: str,
+        *,
+        session: Optional[ClientSession] = None,
+        use_sso: bool = False,
     ) -> None:
-        """Initialize."""
+        """Initialize.
+
+        :param use_sso: Authenticate via the Moen SSO (Cognito) flow instead of the
+            legacy Flo ``users/auth`` flow. Required for accounts that have migrated to
+            the Moen Smart Water Network (the legacy token now gets a ``401`` from
+            api-gw). Defaults to ``False`` for backwards compatibility.
+        """
         self._password: str = password
         self._session: ClientSession = session
         self._token: Optional[str] = None
         self._token_expiration: Optional[datetime] = None
+        self._use_sso: bool = use_sso
         self._user_id: Optional[str] = None
         self._username: str = username
 
@@ -80,7 +101,10 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         )
 
         if self._token:
-            kwargs["headers"]["Authorization"] = self._token
+            # The legacy token is used as-is; the SSO (Cognito) token is a bearer token.
+            kwargs["headers"]["Authorization"] = (
+                f"Bearer {self._token}" if self._use_sso else self._token
+            )
 
         use_running_session = self._session and not self._session.closed
 
@@ -102,6 +126,13 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
 
     async def async_authenticate(self) -> None:
         """Authenticate the user and set the access token with its expiration."""
+        if self._use_sso:
+            await self._async_authenticate_sso()
+        else:
+            await self._async_authenticate_legacy()
+
+    async def _async_authenticate_legacy(self) -> None:
+        """Authenticate via the legacy Flo ``users/auth`` flow."""
         auth_response: dict = await self._request(
             "post",
             f"{API_V1_BASE}/users/auth",
@@ -119,9 +150,42 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
             assert self._user_id
             self.user = User(self._request, self._user_id)
 
+    async def _async_authenticate_sso(self) -> None:
+        """Authenticate via the Moen SSO (Cognito) flow.
+
+        Exchanges username/password for a Cognito access token at the SSO token
+        endpoint, then resolves the Flo user id from ``/users/me`` (the SSO token, unlike
+        the legacy token, does not embed it).
+        """
+        auth_response: dict = await self._request(
+            "post",
+            SSO_TOKEN_URL,
+            json={
+                "username": self._username,
+                "password": self._password,
+                "client_id": SSO_CLIENT_ID,
+            },
+        )
+
+        token: dict = auth_response["token"]
+        self._token = token["access_token"]
+        self._token_expiration = datetime.now() + timedelta(
+            seconds=int(token.get("expires_in", 3600))
+        )
+
+        if not self._user_id:
+            me: dict = await self._request("get", f"{API_V2_BASE}/users/me")
+            self._user_id = me["id"]
+            assert self._user_id
+            self.user = User(self._request, self._user_id)
+
 
 async def async_get_api(
-    username: str, password: str, *, session: Optional[ClientSession] = None
+    username: str,
+    password: str,
+    *,
+    session: Optional[ClientSession] = None,
+    use_sso: bool = False,
 ) -> API:
     """Instantiate an authenticated API object.
 
@@ -131,8 +195,12 @@ async def async_get_api(
     :type email: ``str``
     :param password: A Flo password
     :type password: ``str``
+    :param use_sso: Use the Moen SSO (Cognito) auth flow; required for accounts migrated
+        to the Moen Smart Water Network (the legacy token is rejected by api-gw with a
+        ``401``). Defaults to ``False``.
+    :type use_sso: ``bool``
     :rtype: :meth:`aioflo.api.API`
     """
-    api = API(username, password, session=session)
+    api = API(username, password, session=session, use_sso=use_sso)
     await api.async_authenticate()
     return api

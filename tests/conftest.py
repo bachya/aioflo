@@ -20,3 +20,23 @@ def auth_success_response():
         "tokenExpiration": 86400,
         "timeNow": now,
     }
+
+
+@pytest.fixture()
+def sso_auth_success_response():
+    """Define a response to the Moen SSO oauth2/token endpoint."""
+    return {
+        "token": {
+            "id_token": "id-token",
+            "access_token": TEST_TOKEN,
+            "token_type": "Bearer",
+            "refresh_token": "refresh-token",
+            "expires_in": 3600,
+        }
+    }
+
+
+@pytest.fixture()
+def sso_users_me_response():
+    """Define a response to /api/v2/users/me (resolves the user id in SSO mode)."""
+    return {"id": TEST_USER_ID, "email": TEST_EMAIL_ADDRESS}

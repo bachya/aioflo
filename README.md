@@ -29,6 +29,14 @@ pip install aioflo
 
 # Usage
 
+**Note on Moen SSO accounts:** if your Flo account has been migrated to the Moen Smart
+Water Network, the legacy login is rejected by the API (`401`). Pass `use_sso=True` to
+authenticate with your Moen account instead:
+
+```python
+api = await async_get_api("<EMAIL>", "<PASSWORD>", use_sso=True)
+```
+
 ```python
 import asyncio
 

@@ -82,3 +82,37 @@ async def test_get_api(aresponses, auth_success_response):
         api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         assert api._token == TEST_TOKEN
         assert api._user_id == TEST_USER_ID
+
+
+@pytest.mark.asyncio
+async def test_get_api_sso(aresponses, sso_auth_success_response, sso_users_me_response):
+    """Test instantiating an API object via the Moen SSO auth flow."""
+    aresponses.add(
+        "4j1gkf0vji.execute-api.us-east-2.amazonaws.com",
+        "/prod/v1/oauth2/token",
+        "post",
+        aresponses.Response(
+            text=json.dumps(sso_auth_success_response), status=200
+        ),
+    )
+
+    async def users_me_handler(request):
+        """Assert the SSO token is sent as a bearer token, then respond."""
+        assert request.headers["Authorization"] == f"Bearer {TEST_TOKEN}"
+        return aresponses.Response(
+            text=json.dumps(sso_users_me_response),
+            status=200,
+            headers={"Content-Type": "application/json"},
+        )
+
+    aresponses.add(
+        "api-gw.meetflo.com", "/api/v2/users/me", "get", users_me_handler
+    )
+
+    async with aiohttp.ClientSession() as session:
+        api = await async_get_api(
+            TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session, use_sso=True
+        )
+        assert api._token == TEST_TOKEN
+        assert api._user_id == TEST_USER_ID
+        assert api._token_expiration > datetime.now()
