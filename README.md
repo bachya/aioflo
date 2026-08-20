@@ -88,6 +88,21 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
+## Moen SSO (Cognito) auth
+
+The current Moen Smartwater app authenticates against Moen's SSO endpoint rather than the
+legacy Flo `users/auth` flow. `use_sso=True` opts into it: the access token is sent to
+`api-gw.meetflo.com` as a bearer token and is refreshed on expiry and on a `401`, falling
+back to a full login if the refresh token is rejected.
+
+```python
+api = await async_get_api("<EMAIL>", "<PASSWORD>", use_sso=True)
+```
+
+The legacy flow is the default and is unchanged. The legacy endpoint still works, so this
+is cover for it being retired rather than a fix for a current failure.
+
+
 By default, the library creates a new connection to Flo with each coroutine. If you are
 calling a large number of coroutines (or merely want to squeeze out every second of
 runtime savings possible), an
