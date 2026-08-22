@@ -28,6 +28,9 @@ async def main() -> None:
             location_info = await api.location.get_info(first_location_id)
             _LOGGER.info(location_info)
 
+            first_device = location_info["devices"][0]
+            first_device_id = first_device["id"]
+
             consumption_info = await api.water.get_consumption_info(
                 first_location_id,
                 datetime(2020, 1, 16, 0, 0),
@@ -35,7 +38,14 @@ async def main() -> None:
             )
             _LOGGER.info(consumption_info)
 
-            first_device_id = location_info["devices"][0]["id"]
+            device_consumption = await api.water.get_consumption_info(
+                first_location_id,
+                datetime(2020, 1, 16, 0, 0),
+                datetime(2020, 1, 16, 23, 59, 59, 999000),
+                device_mac_address=first_device["macAddress"],
+            )
+            _LOGGER.info(device_consumption)
+
             device_info = await api.device.get_info(first_device_id)
             _LOGGER.info(device_info)
 
