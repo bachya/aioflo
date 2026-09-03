@@ -34,6 +34,14 @@ async def test_get_consumption_info(aresponses, auth_success_response):
             text=load_fixture("water_consumption_info_response.json"), status=200
         ),
     )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/water/consumption",
+        "get",
+        aresponses.Response(
+            text=load_fixture("water_consumption_info_response.json"), status=200
+        ),
+    )
 
     start = datetime(2020, 1, 16, 0, 0)
     end = datetime(2020, 1, 16, 23, 59, 59, 999000)
@@ -45,10 +53,18 @@ async def test_get_consumption_info(aresponses, auth_success_response):
         )
         assert len(consumption_info["items"]) == 5
 
+        consumption_info = await api.water.get_consumption_info(
+            TEST_LOCATION_ID, start, end, device_mac_address=TEST_MAC_ADDRESS
+        )
+        assert len(consumption_info["items"]) == 5
+
         # Test various cases of using invalid parameter values in set_mode_sleep:
         with pytest.raises(RequestError):
             await api.water.get_consumption_info(
-                TEST_LOCATION_ID, start, end, interval="a_totally_fake_interval",
+                TEST_LOCATION_ID,
+                start,
+                end,
+                interval="a_totally_fake_interval",
             )
 
 
@@ -81,5 +97,8 @@ async def test_get_metrics(aresponses, auth_success_response):
         # Test various cases of using invalid parameter values in set_mode_sleep:
         with pytest.raises(RequestError):
             await api.water.get_metrics(
-                TEST_MAC_ADDRESS, start, end, interval="a_totally_fake_interval",
+                TEST_MAC_ADDRESS,
+                start,
+                end,
+                interval="a_totally_fake_interval",
             )

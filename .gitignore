@@ -7,3 +7,4 @@ aioflo.egg-info
 coverage.xml
 poetry.lock
 tags
+.DS_Store

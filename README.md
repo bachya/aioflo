@@ -3,10 +3,12 @@
 [![CI](https://github.com/bachya/aioflo/workflows/CI/badge.svg)](https://github.com/bachya/aioflo/actions)
 [![PyPi](https://img.shields.io/pypi/v/aioflo.svg)](https://pypi.python.org/pypi/aioflo)
 [![Version](https://img.shields.io/pypi/pyversions/aioflo.svg)](https://pypi.python.org/pypi/aioflo)
-[![License](https://img.shields.io/pypi/l/aioflo.svg)](https://github.com/bachya/aioflo/blob/master/LICENSE)
-[![Code Coverage](https://codecov.io/gh/bachya/aioflo/branch/master/graph/badge.svg)](https://codecov.io/gh/bachya/aioflo)
+[![License](https://img.shields.io/pypi/l/aioflo.svg)](https://github.com/bachya/aioflo/blob/main/LICENSE)
+[![Code Coverage](https://codecov.io/gh/bachya/aioflo/branch/dev/graph/badge.svg)](https://codecov.io/gh/bachya/aioflo)
 [![Maintainability](https://api.codeclimate.com/v1/badges/1b6949e0c97708925315/maintainability)](https://codeclimate.com/github/bachya/aioflo/maintainability)
 [![Say Thanks](https://img.shields.io/badge/SayThanks-!-1EAEDB.svg)](https://saythanks.io/to/bachya)
+
+<a href="https://www.buymeacoffee.com/bachya1208P" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 `aioflo` is a Python 3, `asyncio`-friendly library for interacting with
 [Flo by Moen Smart Water Detectors](https://www.moen.com/flo).
@@ -15,11 +17,9 @@
 
 `aioflo` is currently supported on:
 
-* Python 3.6
-* Python 3.7
-* Python 3.8
 * Python 3.9
 * Python 3.10
+* Python 3.11
 
 # Installation
 
@@ -31,6 +31,7 @@ pip install aioflo
 
 ```python
 import asyncio
+from datetime import datetime
 
 from aiohttp import ClientSession
 
@@ -49,7 +50,8 @@ async def main() -> None:
     location_info = await api.location.get_info(a_location_id)
 
     # Get device information
-    first_device_id = location_info["devices"][0]["id"]
+    first_device = location_info["devices"][0]
+    first_device_id = first_device["id"]
     device_info = await api.device.get_info(first_device_id)
 
     # Run a health test
@@ -61,16 +63,25 @@ async def main() -> None:
     # Open the shutoff valve
     open_valve_response = await api.device.open_valve(first_device_id)
 
-    # Get consumption info between a start and end datetime:
+    # Get consumption info between a start and end datetime (location-wide aggregate):
     consumption_info = await api.water.get_consumption_info(
         a_location_id,
         datetime(2020, 1, 16, 0, 0),
         datetime(2020, 1, 16, 23, 59, 59, 999000),
     )
 
+    # Scope consumption to a single device. Pass device_mac_address when a location
+    # has multiple Flo devices; omit it for the location-wide total:
+    device_consumption = await api.water.get_consumption_info(
+        a_location_id,
+        datetime(2020, 1, 16, 0, 0),
+        datetime(2020, 1, 16, 23, 59, 59, 999000),
+        device_mac_address=first_device["macAddress"],
+    )
+
     # Get various other metrics related to water usage:
     metrics = await api.water.get_metrics(
-        "<DEVICE_MAC_ADDRESS>",
+        first_device["macAddress"],
         datetime(2020, 1, 16, 0, 0),
         datetime(2020, 1, 16, 23, 59, 59, 999000),
     )
@@ -88,6 +99,21 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
+## Moen SSO (Cognito) auth
+
+The current Moen Smartwater app authenticates against Moen's SSO endpoint rather than the
+legacy Flo `users/auth` flow. `use_sso=True` opts into it: the access token is sent to
+`api-gw.meetflo.com` as a bearer token and is refreshed on expiry and on a `401`, falling
+back to a full login if the refresh token is rejected.
+
+```python
+api = await async_get_api("<EMAIL>", "<PASSWORD>", use_sso=True)
+```
+
+The legacy flow is the default and is unchanged. The legacy endpoint still works, so this
+is cover for it being retired rather than a fix for a current failure.
+
+
 By default, the library creates a new connection to Flo with each coroutine. If you are
 calling a large number of coroutines (or merely want to squeeze out every second of
 runtime savings possible), an
@@ -96,6 +122,7 @@ pooling:
 
 ```python
 import asyncio
+from datetime import datetime
 
 from aiohttp import ClientSession
 
@@ -104,7 +131,7 @@ from aioflo import async_get_api
 
 async def main() -> None:
     """Create the aiohttp session and run the example."""
-    async with ClientSession() as websession:
+    async with ClientSession() as session:
         api = await async_get_api("<EMAIL>", "<PASSWORD>", session=session)
 
         # Tell Flo to get updated data from the device
@@ -118,7 +145,8 @@ async def main() -> None:
         location_info = await api.location.get_info(a_location_id)
 
         # Get device information
-        first_device_id = location_info["devices"][0]["id"]
+        first_device = location_info["devices"][0]
+        first_device_id = first_device["id"]
         device_info = await api.device.get_info(first_device_id)
 
         # Run a health test
@@ -130,16 +158,25 @@ async def main() -> None:
         # Open the shutoff valve
         open_valve_response = await api.device.open_valve(first_device_id)
 
-        # Get consumption info between a start and end datetime:
+        # Get consumption info between a start and end datetime (location-wide aggregate):
         consumption_info = await api.water.get_consumption_info(
             a_location_id,
             datetime(2020, 1, 16, 0, 0),
             datetime(2020, 1, 16, 23, 59, 59, 999000),
         )
 
+        # Scope consumption to a single device. Pass device_mac_address when a location
+        # has multiple Flo devices; omit it for the location-wide total:
+        device_consumption = await api.water.get_consumption_info(
+            a_location_id,
+            datetime(2020, 1, 16, 0, 0),
+            datetime(2020, 1, 16, 23, 59, 59, 999000),
+            device_mac_address=first_device["macAddress"],
+        )
+
         # Get various other metrics related to water usage:
         metrics = await api.water.get_metrics(
-            "<DEVICE_MAC_ADDRESS>",
+            first_device["macAddress"],
             datetime(2020, 1, 16, 0, 0),
             datetime(2020, 1, 16, 23, 59, 59, 999000),
         )
