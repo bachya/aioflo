@@ -86,6 +86,13 @@ async def main() -> None:
         datetime(2020, 1, 16, 23, 59, 59, 999000),
     )
 
+    # Get recent Flo Detect water-flow events (near-real-time usage):
+    events = await api.flodetect.get_events(
+        first_device["macAddress"],
+        to=datetime(2026, 7, 12, 10, 25, 4),
+        limit=20,
+    )
+
     # Set the device in "Away" mode:
     await set_mode_away(a_location_id)
 
@@ -179,6 +186,13 @@ async def main() -> None:
             first_device["macAddress"],
             datetime(2020, 1, 16, 0, 0),
             datetime(2020, 1, 16, 23, 59, 59, 999000),
+        )
+
+        # Get recent Flo Detect water-flow events (near-real-time usage):
+        events = await api.flodetect.get_events(
+            first_device["macAddress"],
+            to=datetime(2026, 7, 12, 10, 25, 4),
+            limit=20,
         )
 
         # Set the device in "Away" mode:

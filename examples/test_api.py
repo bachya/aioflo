@@ -46,6 +46,13 @@ async def main() -> None:
             )
             _LOGGER.info(device_consumption)
 
+            events = await api.flodetect.get_events(
+                first_device["macAddress"],
+                to=datetime.now(),
+                limit=20,
+            )
+            _LOGGER.info(events)
+
             device_info = await api.device.get_info(first_device_id)
             _LOGGER.info(device_info)
 
