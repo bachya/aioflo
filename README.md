@@ -13,17 +13,6 @@
 `aioflo` is a Python 3, `asyncio`-friendly library for interacting with
 [Flo by Moen Smart Water Detectors](https://www.moen.com/flo).
 
-# Python Versions
-
-`aioflo` is currently supported on:
-
-* Python 3.9
-* Python 3.10
-* Python 3.11
-* Python 3.12
-* Python 3.13
-* Python 3.14
-
 # Installation
 
 ```bash
