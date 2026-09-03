@@ -1,6 +1,6 @@
 """Define /water endpoints."""
 from datetime import datetime
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, Optional
 
 from .const import API_V2_BASE
 from .util import raise_on_invalid_argument
@@ -24,6 +24,7 @@ class Water:  # pylint: disable=too-few-public-methods
         start: datetime,
         end: datetime,
         interval: str = INTERVAL_HOURLY,
+        device_mac_address: Optional[str] = None,
     ) -> dict:
         """Return user account data.
 
@@ -33,19 +34,25 @@ class Water:  # pylint: disable=too-few-public-methods
         :type start: ``datetime.datetime``
         :param end: The end datetime of the range to examine
         :type end: ``datetime.datetime``
+        :param device_mac_address: Limit results to a single device at the location
+        :type device_mac_address: ``Optional[str]``
         :rtype: ``dict``
         """
         raise_on_invalid_argument(interval, INTERVALS)
 
+        params = {
+            "endDate": end.isoformat(),
+            "interval": interval,
+            "locationId": location_id,
+            "startDate": start.isoformat(),
+        }
+        if device_mac_address:
+            params["macAddress"] = device_mac_address.replace(":", "")
+
         return await self._request(
             "get",
             f"{API_V2_BASE}/water/consumption",
-            params={
-                "endDate": end.isoformat(),
-                "interval": interval,
-                "locationId": location_id,
-                "startDate": start.isoformat(),
-            },
+            params=params,
         )
 
     async def get_metrics(

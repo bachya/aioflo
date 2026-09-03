@@ -31,6 +31,7 @@ pip install aioflo
 
 ```python
 import asyncio
+from datetime import datetime
 
 from aiohttp import ClientSession
 
@@ -49,7 +50,8 @@ async def main() -> None:
     location_info = await api.location.get_info(a_location_id)
 
     # Get device information
-    first_device_id = location_info["devices"][0]["id"]
+    first_device = location_info["devices"][0]
+    first_device_id = first_device["id"]
     device_info = await api.device.get_info(first_device_id)
 
     # Run a health test
@@ -61,16 +63,25 @@ async def main() -> None:
     # Open the shutoff valve
     open_valve_response = await api.device.open_valve(first_device_id)
 
-    # Get consumption info between a start and end datetime:
+    # Get consumption info between a start and end datetime (location-wide aggregate):
     consumption_info = await api.water.get_consumption_info(
         a_location_id,
         datetime(2020, 1, 16, 0, 0),
         datetime(2020, 1, 16, 23, 59, 59, 999000),
     )
 
+    # Scope consumption to a single device. Pass device_mac_address when a location
+    # has multiple Flo devices; omit it for the location-wide total:
+    device_consumption = await api.water.get_consumption_info(
+        a_location_id,
+        datetime(2020, 1, 16, 0, 0),
+        datetime(2020, 1, 16, 23, 59, 59, 999000),
+        device_mac_address=first_device["macAddress"],
+    )
+
     # Get various other metrics related to water usage:
     metrics = await api.water.get_metrics(
-        "<DEVICE_MAC_ADDRESS>",
+        first_device["macAddress"],
         datetime(2020, 1, 16, 0, 0),
         datetime(2020, 1, 16, 23, 59, 59, 999000),
     )
@@ -96,6 +107,7 @@ pooling:
 
 ```python
 import asyncio
+from datetime import datetime
 
 from aiohttp import ClientSession
 
@@ -104,7 +116,7 @@ from aioflo import async_get_api
 
 async def main() -> None:
     """Create the aiohttp session and run the example."""
-    async with ClientSession() as websession:
+    async with ClientSession() as session:
         api = await async_get_api("<EMAIL>", "<PASSWORD>", session=session)
 
         # Tell Flo to get updated data from the device
@@ -118,7 +130,8 @@ async def main() -> None:
         location_info = await api.location.get_info(a_location_id)
 
         # Get device information
-        first_device_id = location_info["devices"][0]["id"]
+        first_device = location_info["devices"][0]
+        first_device_id = first_device["id"]
         device_info = await api.device.get_info(first_device_id)
 
         # Run a health test
@@ -130,16 +143,25 @@ async def main() -> None:
         # Open the shutoff valve
         open_valve_response = await api.device.open_valve(first_device_id)
 
-        # Get consumption info between a start and end datetime:
+        # Get consumption info between a start and end datetime (location-wide aggregate):
         consumption_info = await api.water.get_consumption_info(
             a_location_id,
             datetime(2020, 1, 16, 0, 0),
             datetime(2020, 1, 16, 23, 59, 59, 999000),
         )
 
+        # Scope consumption to a single device. Pass device_mac_address when a location
+        # has multiple Flo devices; omit it for the location-wide total:
+        device_consumption = await api.water.get_consumption_info(
+            a_location_id,
+            datetime(2020, 1, 16, 0, 0),
+            datetime(2020, 1, 16, 23, 59, 59, 999000),
+            device_mac_address=first_device["macAddress"],
+        )
+
         # Get various other metrics related to water usage:
         metrics = await api.water.get_metrics(
-            "<DEVICE_MAC_ADDRESS>",
+            first_device["macAddress"],
             datetime(2020, 1, 16, 0, 0),
             datetime(2020, 1, 16, 23, 59, 59, 999000),
         )

@@ -8,6 +8,8 @@ repos:
           - --quiet
           - --format=custom
           - --configfile=.bandit.yaml
+        additional_dependencies:
+          - pbr
         files: ^aioflo/.+\.py$
   - repo: https://github.com/python/black
     rev: 22.10.0
@@ -26,7 +28,7 @@ repos:
           - --skip="./.*,*.json"
           - --quiet-level=4
         exclude_types: [json]
-  - repo: https://gitlab.com/pycqa/flake8
+  - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
       - id: flake8
@@ -36,7 +38,7 @@ repos:
           - pydocstyle
         files: ^aioflo/.+\.py$
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 5.13.2
     hooks:
       - id: isort
         additional_dependencies:
