@@ -2,7 +2,6 @@
 
 from datetime import datetime, timedelta
 import logging
-from typing import Optional
 from urllib.parse import urlparse
 
 from aiohttp import ClientSession, ClientTimeout
@@ -52,7 +51,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         username: str,
         password: str,
         *,
-        session: Optional[ClientSession] = None,
+        session: ClientSession | None = None,
         use_sso: bool = False,
     ) -> None:
         """Initialize.
@@ -63,11 +62,11 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         """
         self._password: str = password
         self._session: ClientSession = session
-        self._token: Optional[str] = None
-        self._token_expiration: Optional[datetime] = None
-        self._refresh_token: Optional[str] = None
+        self._token: str | None = None
+        self._token_expiration: datetime | None = None
+        self._refresh_token: str | None = None
         self._use_sso: bool = use_sso
-        self._user_id: Optional[str] = None
+        self._user_id: str | None = None
         self._username: str = username
 
         self.alarm: Alarm = Alarm(self._request)
@@ -78,7 +77,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         self.flodetect: Flodetect = Flodetect(self._request)
 
         # These endpoints will get instantiated post-authentication:
-        self.user: Optional[User] = None
+        self.user: User | None = None
 
     async def _request(  # pylint: disable=too-many-locals
         self,
@@ -244,7 +243,7 @@ async def async_get_api(
     username: str,
     password: str,
     *,
-    session: Optional[ClientSession] = None,
+    session: ClientSession | None = None,
     use_sso: bool = False,
 ) -> API:
     """Instantiate an authenticated API object.

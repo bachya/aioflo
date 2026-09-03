@@ -76,4 +76,4 @@ repos:
     hooks:
       - id: pyupgrade
         args:
-          - --py39-plus
+          - --py311-plus
