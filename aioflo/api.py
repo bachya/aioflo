@@ -11,6 +11,7 @@ from .alarm import Alarm
 from .const import API_V2_BASE
 from .device import Device
 from .errors import RequestError
+from .flodetect import Flodetect
 from .location import Location
 from .presence import Presence
 from .user import User
@@ -73,6 +74,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         self.water: Water = Water(self._request)
         self.device: Device = Device(self._request)
         self.presence: Presence = Presence(self._request)
+        self.flodetect: Flodetect = Flodetect(self._request)
 
         # These endpoints will get instantiated post-authentication:
         self.user: Optional[User] = None
