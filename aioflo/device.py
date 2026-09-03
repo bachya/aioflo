@@ -1,5 +1,7 @@
 """Define /device endpoints."""
-from typing import Awaitable, Callable
+
+from collections.abc import Awaitable
+from typing import Callable
 
 from .const import API_V2_BASE
 
@@ -20,7 +22,7 @@ class Device:  # pylint: disable=too-few-public-methods
         """
         return await self._request("get", f"{API_V2_BASE}/devices/{device_id}")
 
-    async def run_health_test(self, device_id: str) -> None:
+    async def run_health_test(self, device_id: str) -> dict:
         """Run a health test for a specific device.
 
         :param device_id: Unique identifier for the device
@@ -31,7 +33,7 @@ class Device:  # pylint: disable=too-few-public-methods
             "post", f"{API_V2_BASE}/devices/{device_id}/healthTest/run"
         )
 
-    async def open_valve(self, device_id: str) -> None:
+    async def open_valve(self, device_id: str) -> dict:
         """Open the valve for a specific device.
 
         :param device_id: Unique identifier for the device
@@ -44,7 +46,7 @@ class Device:  # pylint: disable=too-few-public-methods
             json={"valve": {"target": "open"}},
         )
 
-    async def close_valve(self, device_id: str) -> None:
+    async def close_valve(self, device_id: str) -> dict:
         """Close the valve for a specific device.
 
         :param device_id: Unique identifier for the device

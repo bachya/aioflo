@@ -2,7 +2,7 @@
 
 **Does this fix a specific issue?**
 
-Fixes https://github.com/bachya/aioambient/issues/<ISSUE ID>
+Fixes https://github.com/bachya/aioflo/issues/<ISSUE ID>
 
 **Checklist:**
 

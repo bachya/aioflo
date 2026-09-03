@@ -13,8 +13,7 @@ indent = "    "
 known_first_party = "aioflo,examples,tests"
 line_length = 88
 multi_line_output = 3
-not_skip = "__init__.py"
-sections = "FUTURE,STDLIB,INBETWEENS,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
 use_parentheses = true
 
 [tool.poetry]
@@ -32,6 +31,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -42,7 +44,7 @@ python = ">=3.9.0"
 
 [tool.poetry.dev-dependencies]
 aresponses = "^2.0.0"
-pre-commit = "^2.15.0"
+pre-commit = "^4.0.0"
 pytest = "^7.0.0"
 pytest-asyncio = "^0.19.0"
 pytest-cov = "^3.0.0"

@@ -1,4 +1,5 @@
 """Define tests for device-related endpoints."""
+
 import json
 
 import aiohttp

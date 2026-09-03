@@ -1,4 +1,5 @@
 """Run an example script to quickly test."""
+
 import asyncio
 from datetime import datetime
 import logging
@@ -12,6 +13,8 @@ _LOGGER = logging.getLogger()
 
 EMAIL = "<EMAIL>"
 PASSWORD = "<PASSWORD>"
+# The current Moen Smartwater app uses SSO; set True if the legacy login fails:
+USE_SSO = False
 
 
 async def main() -> None:
@@ -19,7 +22,7 @@ async def main() -> None:
     logging.basicConfig(level=logging.INFO)
     async with ClientSession() as session:
         try:
-            api = await async_get_api(EMAIL, PASSWORD, session=session)
+            api = await async_get_api(EMAIL, PASSWORD, session=session, use_sso=USE_SSO)
 
             user_info = await api.user.get_info()
             _LOGGER.info(user_info)
@@ -30,6 +33,9 @@ async def main() -> None:
 
             first_device = location_info["devices"][0]
             first_device_id = first_device["id"]
+
+            alarm_info = await api.alarm.get_all()
+            _LOGGER.info(alarm_info)
 
             consumption_info = await api.water.get_consumption_info(
                 first_location_id,
@@ -45,6 +51,13 @@ async def main() -> None:
                 device_mac_address=first_device["macAddress"],
             )
             _LOGGER.info(device_consumption)
+
+            metrics = await api.water.get_metrics(
+                first_device["macAddress"],
+                datetime(2020, 1, 16, 0, 0),
+                datetime(2020, 1, 16, 23, 59, 59, 999000),
+            )
+            _LOGGER.info(metrics)
 
             events = await api.flodetect.get_events(
                 first_device["macAddress"],
@@ -67,6 +80,8 @@ async def main() -> None:
 
             ping_response = await api.presence.ping()
             _LOGGER.info(ping_response)
+
+            await api.location.set_mode_home(first_location_id)
 
         except FloError as err:
             _LOGGER.error("There was an error: %s", err)

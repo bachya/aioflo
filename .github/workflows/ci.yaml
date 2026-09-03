@@ -5,12 +5,12 @@ on:
   pull_request:
     branches:
       - dev
-      - master
+      - main
 
   push:
     branches:
       - dev
-      - master
+      - main
 
 jobs:
   test:
@@ -24,19 +24,21 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-          architecture: x64
 
       - run: |
           python -m venv venv
           venv/bin/pip install -r requirements_test.txt
-          venv/bin/py.test tests/
+          venv/bin/pytest tests/
 
   coverage:
 
@@ -45,24 +47,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
-          architecture: x64
+          python-version: "3.13"
 
       - run: |
           python -m venv venv
           venv/bin/pip install -r requirements_test.txt
-          venv/bin/py.test \
+          venv/bin/pytest \
             -s \
             --verbose \
             --cov-report term-missing \
             --cov-report xml \
             --cov=aioflo tests
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -73,13 +74,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
-          architecture: x64
+          python-version: "3.13"
 
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@v3.0.1
         env:
           SKIP: no-commit-to-branch
