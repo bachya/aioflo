@@ -97,7 +97,9 @@ SSO_PATH = "/prod/v1/oauth2/token"
 
 
 @pytest.mark.asyncio
-async def test_get_api_sso(aresponses, sso_auth_success_response, sso_users_me_response):
+async def test_get_api_sso(
+    aresponses, sso_auth_success_response, sso_users_me_response
+):
     """Test that the SSO flow authenticates and sends a bearer token."""
     aresponses.add(
         SSO_HOST,
@@ -131,7 +133,9 @@ async def test_get_api_sso(aresponses, sso_auth_success_response, sso_users_me_r
 
 @pytest.mark.asyncio
 async def test_sso_refresh_on_expiry(
-    aresponses, sso_auth_success_response, sso_refresh_success_response,
+    aresponses,
+    sso_auth_success_response,
+    sso_refresh_success_response,
     sso_users_me_response,
 ):
     """Test that an expired SSO token is replaced via the refresh grant."""
@@ -141,8 +145,12 @@ async def test_sso_refresh_on_expiry(
         "post",
         aresponses.Response(text=json.dumps(sso_auth_success_response), status=200),
     )
-    aresponses.add("api-gw.meetflo.com", "/api/v2/users/me", "get",
-                   aresponses.Response(text=json.dumps(sso_users_me_response), status=200))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/users/me",
+        "get",
+        aresponses.Response(text=json.dumps(sso_users_me_response), status=200),
+    )
 
     async def refresh_handler(request):
         """Assert the refresh grant is used rather than username/password."""
@@ -157,8 +165,12 @@ async def test_sso_refresh_on_expiry(
         )
 
     aresponses.add(SSO_HOST, SSO_PATH, "post", refresh_handler)
-    aresponses.add("api-gw.meetflo.com", "/api/v2/ok", "get",
-                   aresponses.Response(text=json.dumps({"ok": True}), status=200))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/ok",
+        "get",
+        aresponses.Response(text=json.dumps({"ok": True}), status=200),
+    )
 
     async with aiohttp.ClientSession() as session:
         api = await async_get_api(
@@ -174,7 +186,9 @@ async def test_sso_refresh_on_expiry(
 
 @pytest.mark.asyncio
 async def test_sso_reauth_on_401(
-    aresponses, sso_auth_success_response, sso_refresh_success_response,
+    aresponses,
+    sso_auth_success_response,
+    sso_refresh_success_response,
     sso_users_me_response,
 ):
     """Test that a 401 mid-flight triggers a refresh and one retry."""
@@ -184,14 +198,22 @@ async def test_sso_reauth_on_401(
         "post",
         aresponses.Response(text=json.dumps(sso_auth_success_response), status=200),
     )
-    aresponses.add("api-gw.meetflo.com", "/api/v2/users/me", "get",
-                   aresponses.Response(text=json.dumps(sso_users_me_response), status=200))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/users/me",
+        "get",
+        aresponses.Response(text=json.dumps(sso_users_me_response), status=200),
+    )
     # First call is rejected even though the token has not nominally expired:
-    aresponses.add("api-gw.meetflo.com", "/api/v2/thing", "get",
-                   aresponses.Response(text=None, status=401))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/thing",
+        "get",
+        aresponses.Response(text=None, status=401),
+    )
 
     async def refresh_after_401_handler(request):
-        """The token endpoint must not receive the rejected access token.
+        """Assert the token endpoint does not receive the rejected access token.
 
         Unlike the expiry path, ``_token`` is still set when a 401 triggers this, so
         this is the case where suppressing the Authorization header actually matters.
@@ -202,8 +224,12 @@ async def test_sso_reauth_on_401(
         )
 
     aresponses.add(SSO_HOST, SSO_PATH, "post", refresh_after_401_handler)
-    aresponses.add("api-gw.meetflo.com", "/api/v2/thing", "get",
-                   aresponses.Response(text=json.dumps({"ok": True}), status=200))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/thing",
+        "get",
+        aresponses.Response(text=json.dumps({"ok": True}), status=200),
+    )
 
     async with aiohttp.ClientSession() as session:
         api = await async_get_api(
@@ -242,18 +268,36 @@ async def test_legacy_token_is_sent_raw(aresponses, auth_success_response):
 
 @pytest.mark.asyncio
 async def test_sso_retry_after_401_carries_the_new_token(
-    aresponses, sso_auth_success_response, sso_refresh_success_response,
+    aresponses,
+    sso_auth_success_response,
+    sso_refresh_success_response,
     sso_users_me_response,
 ):
     """The retried request must send the REFRESHED token, as a bearer token."""
-    aresponses.add(SSO_HOST, SSO_PATH, "post",
-                   aresponses.Response(text=json.dumps(sso_auth_success_response), status=200))
-    aresponses.add("api-gw.meetflo.com", "/api/v2/users/me", "get",
-                   aresponses.Response(text=json.dumps(sso_users_me_response), status=200))
-    aresponses.add("api-gw.meetflo.com", "/api/v2/thing", "get",
-                   aresponses.Response(text=None, status=401))
-    aresponses.add(SSO_HOST, SSO_PATH, "post",
-                   aresponses.Response(text=json.dumps(sso_refresh_success_response), status=200))
+    aresponses.add(
+        SSO_HOST,
+        SSO_PATH,
+        "post",
+        aresponses.Response(text=json.dumps(sso_auth_success_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/users/me",
+        "get",
+        aresponses.Response(text=json.dumps(sso_users_me_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/thing",
+        "get",
+        aresponses.Response(text=None, status=401),
+    )
+    aresponses.add(
+        SSO_HOST,
+        SSO_PATH,
+        "post",
+        aresponses.Response(text=json.dumps(sso_refresh_success_response), status=200),
+    )
 
     async def retried(request):
         assert request.headers["Authorization"] == f"Bearer {TEST_SSO_REFRESHED_TOKEN}"
@@ -270,15 +314,27 @@ async def test_sso_retry_after_401_carries_the_new_token(
 
 @pytest.mark.asyncio
 async def test_sso_rejected_refresh_falls_back_to_full_login(
-    aresponses, sso_auth_success_response, sso_users_me_response,
+    aresponses,
+    sso_auth_success_response,
+    sso_users_me_response,
 ):
     """A rejected refresh grant must fall back to a username/password login."""
-    aresponses.add(SSO_HOST, SSO_PATH, "post",
-                   aresponses.Response(text=json.dumps(sso_auth_success_response), status=200))
-    aresponses.add("api-gw.meetflo.com", "/api/v2/users/me", "get",
-                   aresponses.Response(text=json.dumps(sso_users_me_response), status=200))
+    aresponses.add(
+        SSO_HOST,
+        SSO_PATH,
+        "post",
+        aresponses.Response(text=json.dumps(sso_auth_success_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/users/me",
+        "get",
+        aresponses.Response(text=json.dumps(sso_users_me_response), status=200),
+    )
     # The refresh grant is rejected...
-    aresponses.add(SSO_HOST, SSO_PATH, "post", aresponses.Response(text=None, status=400))
+    aresponses.add(
+        SSO_HOST, SSO_PATH, "post", aresponses.Response(text=None, status=400)
+    )
 
     async def full_login(request):
         body = await request.json()
@@ -289,8 +345,12 @@ async def test_sso_rejected_refresh_falls_back_to_full_login(
         )
 
     aresponses.add(SSO_HOST, SSO_PATH, "post", full_login)
-    aresponses.add("api-gw.meetflo.com", "/api/v2/ok", "get",
-                   aresponses.Response(text=json.dumps({"ok": True}), status=200))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/ok",
+        "get",
+        aresponses.Response(text=json.dumps({"ok": True}), status=200),
+    )
 
     async with aiohttp.ClientSession() as session:
         api = await async_get_api(
@@ -303,13 +363,23 @@ async def test_sso_rejected_refresh_falls_back_to_full_login(
 
 @pytest.mark.asyncio
 async def test_sso_no_refresh_token_does_a_full_login(
-    aresponses, sso_auth_success_response, sso_users_me_response,
+    aresponses,
+    sso_auth_success_response,
+    sso_users_me_response,
 ):
     """With no refresh token held, expiry must trigger a full login."""
-    aresponses.add(SSO_HOST, SSO_PATH, "post",
-                   aresponses.Response(text=json.dumps(sso_auth_success_response), status=200))
-    aresponses.add("api-gw.meetflo.com", "/api/v2/users/me", "get",
-                   aresponses.Response(text=json.dumps(sso_users_me_response), status=200))
+    aresponses.add(
+        SSO_HOST,
+        SSO_PATH,
+        "post",
+        aresponses.Response(text=json.dumps(sso_auth_success_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/users/me",
+        "get",
+        aresponses.Response(text=json.dumps(sso_users_me_response), status=200),
+    )
 
     async def full_login(request):
         assert "grant_type" not in await request.json()
@@ -318,8 +388,12 @@ async def test_sso_no_refresh_token_does_a_full_login(
         )
 
     aresponses.add(SSO_HOST, SSO_PATH, "post", full_login)
-    aresponses.add("api-gw.meetflo.com", "/api/v2/ok", "get",
-                   aresponses.Response(text=json.dumps({"ok": True}), status=200))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/ok",
+        "get",
+        aresponses.Response(text=json.dumps({"ok": True}), status=200),
+    )
 
     async with aiohttp.ClientSession() as session:
         api = await async_get_api(
@@ -332,18 +406,25 @@ async def test_sso_no_refresh_token_does_a_full_login(
 
 @pytest.mark.asyncio
 async def test_sso_token_without_expires_in_is_tolerated(
-    aresponses, sso_users_me_response,
+    aresponses,
+    sso_users_me_response,
 ):
     """A token response omitting expires_in must fall back to the 3600s default."""
     aresponses.add(
-        SSO_HOST, SSO_PATH, "post",
+        SSO_HOST,
+        SSO_PATH,
+        "post",
         aresponses.Response(
             text=json.dumps({"token": {"access_token": TEST_SSO_ACCESS_TOKEN}}),
             status=200,
         ),
     )
-    aresponses.add("api-gw.meetflo.com", "/api/v2/users/me", "get",
-                   aresponses.Response(text=json.dumps(sso_users_me_response), status=200))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/users/me",
+        "get",
+        aresponses.Response(text=json.dumps(sso_users_me_response), status=200),
+    )
 
     async with aiohttp.ClientSession() as session:
         api = await async_get_api(
@@ -357,8 +438,12 @@ async def test_sso_token_without_expires_in_is_tolerated(
 async def test_sso_response_without_access_token_raises(aresponses):
     """A 200 carrying no access token (e.g. an OTP challenge) must not look like success."""
     aresponses.add(
-        SSO_HOST, SSO_PATH, "post",
-        aresponses.Response(text=json.dumps({"token": {"challenge": "OTP"}}), status=200),
+        SSO_HOST,
+        SSO_PATH,
+        "post",
+        aresponses.Response(
+            text=json.dumps({"token": {"challenge": "OTP"}}), status=200
+        ),
     )
 
     async with aiohttp.ClientSession() as session:
@@ -369,7 +454,9 @@ async def test_sso_response_without_access_token_raises(aresponses):
 
 
 @pytest.mark.asyncio
-async def test_legacy_401_does_not_trigger_sso_reauth(aresponses, auth_success_response):
+async def test_legacy_401_does_not_trigger_sso_reauth(
+    aresponses, auth_success_response
+):
     """A 401 on the legacy path must surface, not route into the SSO refresh."""
     aresponses.add(
         "api.meetflo.com",
@@ -379,8 +466,12 @@ async def test_legacy_401_does_not_trigger_sso_reauth(aresponses, auth_success_r
     )
     # Exactly one 401 is registered: if the client retried, aresponses would raise for
     # an unmatched second request rather than returning another 401.
-    aresponses.add("api-gw.meetflo.com", "/api/v2/thing", "get",
-                   aresponses.Response(text=None, status=401))
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/thing",
+        "get",
+        aresponses.Response(text=None, status=401),
+    )
 
     async with aiohttp.ClientSession() as session:
         api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
@@ -390,14 +481,24 @@ async def test_legacy_401_does_not_trigger_sso_reauth(aresponses, auth_success_r
 
 @pytest.mark.asyncio
 async def test_sso_persistent_401_stops_after_one_retry(
-    aresponses, sso_auth_success_response, sso_refresh_success_response,
+    aresponses,
+    sso_auth_success_response,
+    sso_refresh_success_response,
     sso_users_me_response,
 ):
     """A token that keeps being rejected must not retry forever."""
-    aresponses.add(SSO_HOST, SSO_PATH, "post",
-                   aresponses.Response(text=json.dumps(sso_auth_success_response), status=200))
-    aresponses.add("api-gw.meetflo.com", "/api/v2/users/me", "get",
-                   aresponses.Response(text=json.dumps(sso_users_me_response), status=200))
+    aresponses.add(
+        SSO_HOST,
+        SSO_PATH,
+        "post",
+        aresponses.Response(text=json.dumps(sso_auth_success_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/users/me",
+        "get",
+        aresponses.Response(text=json.dumps(sso_users_me_response), status=200),
+    )
 
     calls = []
 
@@ -407,8 +508,12 @@ async def test_sso_persistent_401_stops_after_one_retry(
 
     # Two 401s and one refresh: a third attempt would find no registered response.
     aresponses.add("api-gw.meetflo.com", "/api/v2/thing", "get", always_401)
-    aresponses.add(SSO_HOST, SSO_PATH, "post",
-                   aresponses.Response(text=json.dumps(sso_refresh_success_response), status=200))
+    aresponses.add(
+        SSO_HOST,
+        SSO_PATH,
+        "post",
+        aresponses.Response(text=json.dumps(sso_refresh_success_response), status=200),
+    )
     aresponses.add("api-gw.meetflo.com", "/api/v2/thing", "get", always_401)
 
     async with aiohttp.ClientSession() as session:
