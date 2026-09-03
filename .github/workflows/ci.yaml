@@ -21,8 +21,6 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.9"
-          - "3.10"
           - "3.11"
           - "3.12"
           - "3.13"
@@ -39,6 +37,22 @@ jobs:
           python -m venv venv
           venv/bin/pip install -r requirements_test.txt
           venv/bin/pytest tests/
+
+  # Branch protection still requires these job names. They only report success;
+  # Python 3.9/3.10 are no longer tested. Remove once the required checks are updated.
+  retired-python:
+    name: Tests (${{ matrix.python-version }})
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version:
+          - "3.9"
+          - "3.10"
+
+    steps:
+      - run: echo "Python ${{ matrix.python-version }} is no longer supported."
 
   coverage:
 

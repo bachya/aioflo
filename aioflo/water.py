@@ -1,8 +1,7 @@
 """Define /water endpoints."""
 
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Callable
 from datetime import datetime
-from typing import Callable, Optional
 
 from .const import API_V2_BASE
 from .util import raise_on_invalid_argument
@@ -26,7 +25,7 @@ class Water:  # pylint: disable=too-few-public-methods
         start: datetime,
         end: datetime,
         interval: str = INTERVAL_HOURLY,
-        device_mac_address: Optional[str] = None,
+        device_mac_address: str | None = None,
     ) -> dict:
         """Return water consumption data.
 

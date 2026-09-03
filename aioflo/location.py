@@ -1,7 +1,6 @@
 """Define /location endpoints."""
 
-from collections.abc import Awaitable
-from typing import Callable, Optional
+from collections.abc import Awaitable, Callable
 
 from .const import API_V2_BASE
 from .util import raise_on_invalid_argument
@@ -25,7 +24,7 @@ class Location:
         self._request: Callable[..., Awaitable] = request
 
     async def _set_system_mode(
-        self, location_id: str, mode: str, additional_payload: Optional[dict] = None
+        self, location_id: str, mode: str, additional_payload: dict | None = None
     ) -> None:
         """Set the system mode (with optional parameters)."""
         raise_on_invalid_argument(mode, SYSTEM_MODES)
@@ -82,7 +81,7 @@ class Location:
         self,
         location_id: str,
         revert_minutes: int,
-        revert_mode: Optional[str] = SYSTEM_MODE_HOME,
+        revert_mode: str | None = SYSTEM_MODE_HOME,
     ) -> None:
         """Set the system mode to "Sleep".
 
