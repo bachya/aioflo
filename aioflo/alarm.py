@@ -1,5 +1,7 @@
 """Define /alarms endpoints."""
-from typing import Awaitable, Callable
+
+from collections.abc import Awaitable
+from typing import Callable
 
 from .const import API_V2_BASE
 
@@ -11,6 +13,6 @@ class Alarm:  # pylint: disable=too-few-public-methods
         """Initialize."""
         self._request: Callable[..., Awaitable] = request
 
-    async def get_all(self):
+    async def get_all(self) -> dict:
         """Get all alarms."""
         return await self._request("get", f"{API_V2_BASE}/alarms")

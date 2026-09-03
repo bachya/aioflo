@@ -1,6 +1,8 @@
 """Define /flodetect endpoints."""
+
+from collections.abc import Awaitable
 from datetime import datetime
-from typing import Awaitable, Callable, Optional
+from typing import Callable, Optional
 
 from .const import API_V2_BASE
 

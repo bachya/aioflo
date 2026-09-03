@@ -1,4 +1,5 @@
 """Define fixtures available for all tests."""
+
 import time
 
 import pytest

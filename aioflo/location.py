@@ -1,5 +1,7 @@
 """Define /location endpoints."""
-from typing import Awaitable, Callable, Optional
+
+from collections.abc import Awaitable
+from typing import Callable, Optional
 
 from .const import API_V2_BASE
 from .util import raise_on_invalid_argument
@@ -40,7 +42,7 @@ class Location:
         location_id: str,
         include_device_info: bool = False,
     ) -> dict:
-        """Return user account data.
+        """Return location data.
 
         :param location_id: A Flo location UUID
         :type location_id: ``str``
@@ -82,7 +84,7 @@ class Location:
         revert_minutes: int,
         revert_mode: Optional[str] = SYSTEM_MODE_HOME,
     ) -> None:
-        """Set the system mode to "Home".
+        """Set the system mode to "Sleep".
 
         :param location_id: A Flo location UUID
         :type location_id: ``str``

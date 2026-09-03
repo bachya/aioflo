@@ -1,4 +1,5 @@
 """Define general tests for the API."""
+
 # pylint: disable=protected-access
 from datetime import datetime, timedelta
 import json
@@ -69,9 +70,7 @@ async def test_expired_api_token(aresponses, auth_success_response, caplog):
 
     async with aiohttp.ClientSession() as session:
         api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
-        print(api._token_expiration)
         api._token_expiration = datetime.now() - timedelta(days=1)
-        print(api._token_expiration)
         await api._request("get", "https://api.meetflo.com/api/v1/random_good_endpoint")
         assert any("Requesting new access token" in e.message for e in caplog.records)
 

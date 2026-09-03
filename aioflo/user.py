@@ -1,5 +1,7 @@
 """Define /user endpoints."""
-from typing import Awaitable, Callable
+
+from collections.abc import Awaitable
+from typing import Callable
 
 from .const import API_V2_BASE
 

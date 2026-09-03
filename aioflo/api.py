@@ -1,4 +1,5 @@
 """Define a base client for interacting with Flo."""
+
 from datetime import datetime, timedelta
 import logging
 from typing import Optional
@@ -250,8 +251,8 @@ async def async_get_api(
 
     :param session: An ``aiohttp`` ``ClientSession``
     :type session: ``aiohttp.client.ClientSession``
-    :param email: A Flo email address
-    :type email: ``str``
+    :param username: A Flo email address
+    :type username: ``str``
     :param password: A Flo password
     :type password: ``str``
     :param use_sso: Use the Moen SSO (Cognito) auth flow instead of the legacy one
