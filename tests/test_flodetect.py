@@ -7,6 +7,7 @@ import aiohttp
 import pytest
 
 from aioflo import async_get_api
+from aioflo.flodetect import Flodetect
 
 from .common import TEST_EMAIL_ADDRESS, TEST_MAC_ADDRESS, TEST_PASSWORD, load_fixture
 
@@ -42,9 +43,14 @@ async def test_get_events(aresponses, auth_success_response):
         api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
 
         events = await api.flodetect.get_events(TEST_MAC_ADDRESS)
-        assert len(events["items"]) == 2
-        assert events["items"][0]["gallonsConsumed"] == 2.35
-        assert events["items"][0]["fixtureType"] == "faucet"
+        assert len(events["items"]) == 1
+        parsed = api.flodetect.parse_events(events)
+        assert len(parsed) == 2
+        assert parsed[0]["totalGal"] == 2.35
+        assert parsed[0]["duration"] == 158
+        assert parsed[0]["startAt"] == "2026-07-12T10:12:03-04:00"
+        assert parsed[0]["predicted"]["displayText"] == "Faucet"
+        assert parsed[1]["predicted"]["displayText"] == "Shower"
         assert queries[0] == {"macAddress": TEST_MAC_ADDRESS.replace(":", "")}
 
         events = await api.flodetect.get_events(
@@ -52,9 +58,16 @@ async def test_get_events(aresponses, auth_success_response):
             to=to,
             limit=20,
         )
-        assert len(events["items"]) == 2
+        assert len(api.flodetect.parse_events(events)) == 2
         assert queries[1] == {
             "macAddress": TEST_MAC_ADDRESS.replace(":", ""),
             "to": to.isoformat(),
             "limit": "20",
         }
+
+
+def test_parse_events_empty_payloads():
+    """Test parse_events on missing or empty item groups."""
+    assert Flodetect.parse_events({}) == []
+    assert Flodetect.parse_events({"items": []}) == []
+    assert Flodetect.parse_events({"items": [{"macAddress": "123456abcdef"}]}) == []

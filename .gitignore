@@ -2,6 +2,7 @@
 .mypy_cache
 .tox/
 .venv
+.env
 __pycache__/
 aioflo.egg-info
 coverage.xml
