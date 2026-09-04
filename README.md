@@ -85,6 +85,9 @@ async def main() -> None:
         to=datetime(2026, 7, 12, 10, 25, 4),
         limit=20,
     )
+    # The payload groups events per device under items[].events. Flatten it:
+    flow_events = api.flodetect.parse_events(events)
+    # Each event has startAt, endAt, totalGal, duration, and predicted.displayText.
 
     # Set the device in "Away" mode:
     await api.location.set_mode_away(a_location_id)
@@ -175,6 +178,9 @@ async def main() -> None:
             to=datetime(2026, 7, 12, 10, 25, 4),
             limit=20,
         )
+        # The payload groups events per device under items[].events. Flatten it:
+        flow_events = api.flodetect.parse_events(events)
+        # Each event has startAt, endAt, totalGal, duration, and predicted.displayText.
 
         # Set the device in "Away" mode:
         await api.location.set_mode_away(a_location_id)
