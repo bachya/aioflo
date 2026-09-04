@@ -1,6 +1,7 @@
 """Define /flodetect endpoints."""
+
+from collections.abc import Awaitable, Callable
 from datetime import datetime
-from typing import Awaitable, Callable, Optional
 
 from .const import API_V2_BASE
 
@@ -16,8 +17,8 @@ class Flodetect:  # pylint: disable=too-few-public-methods
         self,
         device_mac_address: str,
         *,
-        to: Optional[datetime] = None,
-        limit: Optional[int] = None,
+        to: datetime | None = None,
+        limit: int | None = None,
     ) -> dict:
         """Return Flo Detect water-flow events for a device.
 

@@ -1,4 +1,5 @@
 """Define tests for water-related endpoints."""
+
 from datetime import datetime
 import json
 

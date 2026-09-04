@@ -1,5 +1,6 @@
 """Define /presence endpoints."""
-from typing import Awaitable, Callable
+
+from collections.abc import Awaitable, Callable
 
 from .const import API_V2_BASE
 

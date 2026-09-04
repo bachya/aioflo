@@ -1,4 +1,5 @@
 """Define tests for location-related endpoints."""
+
 import json
 
 import aiohttp

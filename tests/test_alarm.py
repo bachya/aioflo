@@ -1,4 +1,5 @@
 """Define tests for alarm-related endpoints."""
+
 import json
 
 import aiohttp

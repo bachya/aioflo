@@ -1,6 +1,7 @@
 """Define /water endpoints."""
+
+from collections.abc import Awaitable, Callable
 from datetime import datetime
-from typing import Awaitable, Callable, Optional
 
 from .const import API_V2_BASE
 from .util import raise_on_invalid_argument
@@ -24,9 +25,9 @@ class Water:  # pylint: disable=too-few-public-methods
         start: datetime,
         end: datetime,
         interval: str = INTERVAL_HOURLY,
-        device_mac_address: Optional[str] = None,
+        device_mac_address: str | None = None,
     ) -> dict:
-        """Return user account data.
+        """Return water consumption data.
 
         :param location_id: A Flo location UUID
         :type location_id: ``str``
@@ -34,6 +35,8 @@ class Water:  # pylint: disable=too-few-public-methods
         :type start: ``datetime.datetime``
         :param end: The end datetime of the range to examine
         :type end: ``datetime.datetime``
+        :param interval: Aggregation interval (``1h``, ``1d``, or ``1m``)
+        :type interval: ``str``
         :param device_mac_address: Limit results to a single device at the location
         :type device_mac_address: ``Optional[str]``
         :rtype: ``dict``
@@ -62,12 +65,16 @@ class Water:  # pylint: disable=too-few-public-methods
         end: datetime,
         interval: str = INTERVAL_HOURLY,
     ) -> dict:
-        """Return user account data.
+        """Return water usage metrics for a device.
 
+        :param device_mac_address: MAC address of the Flo device
+        :type device_mac_address: ``str``
         :param start: The start datetime of the range to examine
         :type start: ``datetime.datetime``
         :param end: The end datetime of the range to examine
         :type end: ``datetime.datetime``
+        :param interval: Aggregation interval (``1h``, ``1d``, or ``1m``)
+        :type interval: ``str``
         :rtype: ``dict``
         """
         raise_on_invalid_argument(interval, INTERVALS)

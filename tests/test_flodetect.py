@@ -1,4 +1,5 @@
 """Define tests for Flo Detect-related endpoints."""
+
 from datetime import datetime
 import json
 

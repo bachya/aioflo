@@ -1,4 +1,5 @@
 """Define tests for user-related endpoints."""
+
 import json
 
 import aiohttp

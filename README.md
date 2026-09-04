@@ -1,9 +1,9 @@
 # 💧 aioflo: a Python3, asyncio-friendly library for Flo Smart Water Detectors
 
-[![CI](https://github.com/bachya/aioflo/workflows/CI/badge.svg)](https://github.com/bachya/aioflo/actions)
-[![PyPi](https://img.shields.io/pypi/v/aioflo.svg)](https://pypi.python.org/pypi/aioflo)
-[![Version](https://img.shields.io/pypi/pyversions/aioflo.svg)](https://pypi.python.org/pypi/aioflo)
-[![License](https://img.shields.io/pypi/l/aioflo.svg)](https://github.com/bachya/aioflo/blob/main/LICENSE)
+[![CI](https://github.com/bachya/aioflo/actions/workflows/ci.yaml/badge.svg?branch=dev)](https://github.com/bachya/aioflo/actions/workflows/ci.yaml)
+[![PyPI](https://img.shields.io/pypi/v/aioflo)](https://pypi.org/project/aioflo/)
+[![Python versions](https://img.shields.io/pypi/pyversions/aioflo)](https://pypi.org/project/aioflo/)
+[![License](https://img.shields.io/pypi/l/aioflo)](https://github.com/bachya/aioflo/blob/main/LICENSE)
 [![Code Coverage](https://codecov.io/gh/bachya/aioflo/branch/dev/graph/badge.svg)](https://codecov.io/gh/bachya/aioflo)
 [![Maintainability](https://api.codeclimate.com/v1/badges/1b6949e0c97708925315/maintainability)](https://codeclimate.com/github/bachya/aioflo/maintainability)
 [![Say Thanks](https://img.shields.io/badge/SayThanks-!-1EAEDB.svg)](https://saythanks.io/to/bachya)
@@ -13,17 +13,9 @@
 `aioflo` is a Python 3, `asyncio`-friendly library for interacting with
 [Flo by Moen Smart Water Detectors](https://www.moen.com/flo).
 
-# Python Versions
-
-`aioflo` is currently supported on:
-
-* Python 3.9
-* Python 3.10
-* Python 3.11
-
 # Installation
 
-```python
+```bash
 pip install aioflo
 ```
 
@@ -32,8 +24,6 @@ pip install aioflo
 ```python
 import asyncio
 from datetime import datetime
-
-from aiohttp import ClientSession
 
 from aioflo import async_get_api
 
@@ -53,6 +43,9 @@ async def main() -> None:
     first_device = location_info["devices"][0]
     first_device_id = first_device["id"]
     device_info = await api.device.get_info(first_device_id)
+
+    # Get all alarms:
+    alarms = await api.alarm.get_all()
 
     # Run a health test
     health_test_response = await api.device.run_health_test(first_device_id)
@@ -94,32 +87,17 @@ async def main() -> None:
     )
 
     # Set the device in "Away" mode:
-    await set_mode_away(a_location_id)
+    await api.location.set_mode_away(a_location_id)
 
     # Set the device in "Home" mode:
-    await set_mode_home(a_location_id)
+    await api.location.set_mode_home(a_location_id)
 
     # Set the device in "Sleep" mode for 120 minutes, then return to "Away" mode:
-    await set_mode_sleep(a_location_id, 120, "away")
+    await api.location.set_mode_sleep(a_location_id, 120, "away")
 
 
 asyncio.run(main())
 ```
-
-## Moen SSO (Cognito) auth
-
-The current Moen Smartwater app authenticates against Moen's SSO endpoint rather than the
-legacy Flo `users/auth` flow. `use_sso=True` opts into it: the access token is sent to
-`api-gw.meetflo.com` as a bearer token and is refreshed on expiry and on a `401`, falling
-back to a full login if the refresh token is rejected.
-
-```python
-api = await async_get_api("<EMAIL>", "<PASSWORD>", use_sso=True)
-```
-
-The legacy flow is the default and is unchanged. The legacy endpoint still works, so this
-is cover for it being retired rather than a fix for a current failure.
-
 
 By default, the library creates a new connection to Flo with each coroutine. If you are
 calling a large number of coroutines (or merely want to squeeze out every second of
@@ -155,6 +133,9 @@ async def main() -> None:
         first_device = location_info["devices"][0]
         first_device_id = first_device["id"]
         device_info = await api.device.get_info(first_device_id)
+
+        # Get all alarms:
+        alarms = await api.alarm.get_all()
 
         # Run a health test
         health_test_response = await api.device.run_health_test(first_device_id)
@@ -196,29 +177,28 @@ async def main() -> None:
         )
 
         # Set the device in "Away" mode:
-        await set_mode_away(a_location_id)
+        await api.location.set_mode_away(a_location_id)
 
         # Set the device in "Home" mode:
-        await set_mode_home(a_location_id)
+        await api.location.set_mode_home(a_location_id)
 
         # Set the device in "Sleep" mode for 120 minutes, then return to "Away" mode:
-        await set_mode_sleep(a_location_id, 120, "away")
+        await api.location.set_mode_sleep(a_location_id, 120, "away")
 
 
 asyncio.run(main())
 ```
 
-# Contributing
+## Moen SSO (Cognito) auth
 
-1. [Check for open features/bugs](https://github.com/bachya/aioflo/issues)
-  or [initiate a discussion on one](https://github.com/bachya/aioflo/issues/new).
-2. [Fork the repository](https://github.com/bachya/aioflo/fork).
-3. (_optional, but highly recommended_) Create a virtual environment: `python3 -m venv .venv`
-4. (_optional, but highly recommended_) Enter the virtual environment: `source ./.venv/bin/activate`
-5. Install the dev environment: `script/setup`
-6. Code your new feature or bug fix.
-7. Write tests that cover your new functionality.
-8. Run tests and ensure 100% code coverage: `script/test`
-9. Update `README.md` with any new documentation.
-10. Add yourself to `AUTHORS.md`.
-11. Submit a pull request!
+The current Moen Smartwater app authenticates against Moen's SSO endpoint rather than the
+legacy Flo `users/auth` flow. `use_sso=True` opts into it: the access token is sent to
+`api-gw.meetflo.com` as a bearer token and is refreshed on expiry and on a `401`, falling
+back to a full login if the refresh token is rejected.
+
+```python
+api = await async_get_api("<EMAIL>", "<PASSWORD>", use_sso=True)
+```
+
+The legacy flow is the default and is unchanged. The legacy endpoint still works, so this
+is cover for it being retired rather than a fix for a current failure.
