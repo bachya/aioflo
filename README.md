@@ -1,8 +1,8 @@
 # 💧 aioflo: a Python3, asyncio-friendly library for Flo Smart Water Detectors
 
 [![CI](https://github.com/bachya/aioflo/actions/workflows/ci.yaml/badge.svg?branch=dev)](https://github.com/bachya/aioflo/actions/workflows/ci.yaml)
-[![PyPI](https://img.shields.io/pypi/v/aioflo)](https://pypi.org/project/aioflo/)
-[![Python versions](https://img.shields.io/pypi/pyversions/aioflo)](https://pypi.org/project/aioflo/)
+[![PyPI](https://img.shields.io/pypi/v/aioflo?logo=pypi)](https://pypi.org/project/aioflo/)
+[![Python versions](https://img.shields.io/pypi/pyversions/aioflo?logo=python)](https://pypi.org/project/aioflo/)
 [![License](https://img.shields.io/pypi/l/aioflo)](https://github.com/bachya/aioflo/blob/main/LICENSE)
 [![Code Coverage](https://codecov.io/gh/bachya/aioflo/branch/dev/graph/badge.svg)](https://codecov.io/gh/bachya/aioflo)
 [![Maintainability](https://api.codeclimate.com/v1/badges/1b6949e0c97708925315/maintainability)](https://codeclimate.com/github/bachya/aioflo/maintainability)
