@@ -13,6 +13,22 @@ class Flodetect:  # pylint: disable=too-few-public-methods
         """Initialize."""
         self._request: Callable[..., Awaitable] = request
 
+    @staticmethod
+    def parse_events(payload: dict) -> list[dict]:
+        """Flatten a /flodetect/events payload into a list of event dicts.
+
+        The live API groups events per device::
+
+            {"params": {...}, "items": [{"macAddress": "...", "events": [...]}]}
+
+        Each event uses ``startAt``, ``endAt``, ``totalGal``, ``duration``, and
+        ``predicted.displayText`` (not a flat ``items`` list of events).
+        """
+        events: list[dict] = []
+        for item in payload.get("items") or []:
+            events.extend(item.get("events") or [])
+        return events
+
     async def get_events(
         self,
         device_mac_address: str,
@@ -21,6 +37,9 @@ class Flodetect:  # pylint: disable=too-few-public-methods
         limit: int | None = None,
     ) -> dict:
         """Return Flo Detect water-flow events for a device.
+
+        The raw payload groups events per device under ``items[].events``.
+        Pass it to :meth:`parse_events` to get a flat list.
 
         :param device_mac_address: MAC address of the Flo device
         :type device_mac_address: ``str``

@@ -1,27 +1,40 @@
 {
   "params": {
     "macAddress": "123456abcdef",
-    "to": "2026-07-12T10:25:04-04:00",
-    "limit": "20"
+    "from": "2026-08-04T03:49:00Z",
+    "to": "2026-09-04T03:49:43.611Z",
+    "tz": "America/Los_Angeles",
+    "minGallons": 0
   },
   "items": [
     {
-      "id": "evt-001",
       "macAddress": "123456abcdef",
-      "startTime": "2026-07-12T10:12:03-04:00",
-      "endTime": "2026-07-12T10:14:41-04:00",
-      "gallonsConsumed": 2.35,
-      "durationSeconds": 158,
-      "fixtureType": "faucet"
-    },
-    {
-      "id": "evt-002",
-      "macAddress": "123456abcdef",
-      "startTime": "2026-07-12T09:41:10-04:00",
-      "endTime": "2026-07-12T09:48:22-04:00",
-      "gallonsConsumed": 14.8,
-      "durationSeconds": 432,
-      "fixtureType": "shower"
+      "events": [
+        {
+          "id": "evt-001",
+          "startAt": "2026-07-12T10:12:03-04:00",
+          "endAt": "2026-07-12T10:14:41-04:00",
+          "totalGal": 2.35,
+          "duration": 158,
+          "macAddress": "123456abcdef",
+          "predicted": {
+            "id": 300,
+            "displayText": "Faucet"
+          }
+        },
+        {
+          "id": "evt-002",
+          "startAt": "2026-07-12T09:41:10-04:00",
+          "endAt": "2026-07-12T09:48:22-04:00",
+          "totalGal": 14.8,
+          "duration": 432,
+          "macAddress": "123456abcdef",
+          "predicted": {
+            "id": 101,
+            "displayText": "Shower"
+          }
+        }
+      ]
     }
   ]
 }
