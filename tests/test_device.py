@@ -176,3 +176,38 @@ async def test_get_device_info_keeps_a_real_temperature(
         api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
         device_info = await api.device.get_info(TEST_DEVICE_ID)
         assert device_info["telemetry"]["current"]["tempF"] == reading
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "telemetry",
+    [None, {"current": None}, {"current": "225"}],
+)
+async def test_get_device_info_without_a_temperature_reading(
+    aresponses, auth_success_response, telemetry
+):
+    """No current-telemetry dict means there is nothing to normalize."""
+    device_info_payload = json.loads(load_fixture("device_info_response.json"))
+    if telemetry is None:
+        del device_info_payload["telemetry"]
+    else:
+        device_info_payload["telemetry"] = telemetry
+
+    aresponses.add(
+        "api.meetflo.com",
+        "/api/v1/users/auth",
+        "post",
+        aresponses.Response(text=json.dumps(auth_success_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/devices/98765",
+        "get",
+        aresponses.Response(text=json.dumps(device_info_payload), status=200),
+    )
+
+    async with aiohttp.ClientSession() as session:
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
+        device_info = await api.device.get_info(TEST_DEVICE_ID)
+        assert device_info.get("telemetry") == telemetry
+        assert device_info["nickname"] == "Smart Water Shutoff"
