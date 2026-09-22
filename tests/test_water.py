@@ -103,3 +103,46 @@ async def test_get_metrics(aresponses, auth_success_response):
                 end,
                 interval="a_totally_fake_interval",
             )
+
+
+@pytest.mark.asyncio
+async def test_get_metrics_normalizes_temperature_placeholder(
+    aresponses, auth_success_response
+):
+    """Metrics buckets use the same no-sensor placeholder as live telemetry."""
+    metrics_payload = json.loads(load_fixture("water_metric_info_response.json"))
+    metrics_payload["items"][0]["averageTempF"] = 225
+    metrics_payload["items"][1]["averageTempF"] = 212
+    metrics_payload["items"][2]["averageTempF"] = None
+    metrics_payload["items"].append(
+        {
+            "time": "2020-01-16T03:00:00-07:00",
+            "averageGpm": None,
+            "averagePsi": 77.0,
+            "averageTempF": 211.9,
+        }
+    )
+    pressures = [item["averagePsi"] for item in metrics_payload["items"]]
+
+    aresponses.add(
+        "api.meetflo.com",
+        "/api/v1/users/auth",
+        "post",
+        aresponses.Response(text=json.dumps(auth_success_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/water/metrics",
+        "get",
+        aresponses.Response(text=json.dumps(metrics_payload), status=200),
+    )
+
+    start = datetime(2020, 1, 16, 0, 0)
+    end = datetime(2020, 1, 16, 23, 59, 59, 999000)
+
+    async with aiohttp.ClientSession() as session:
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
+        metrics = await api.water.get_metrics(TEST_MAC_ADDRESS, start, end)
+        temperatures = [item["averageTempF"] for item in metrics["items"]]
+        assert temperatures == [None, None, None, 211.9]
+        assert [item["averagePsi"] for item in metrics["items"]] == pressures
