@@ -22,9 +22,7 @@ class Device:  # pylint: disable=too-few-public-methods
         :type device_id: ``str``
         :rtype: ``dict``
         """
-        device_info = await self._request(
-            "get", f"{API_V2_BASE}/devices/{device_id}"
-        )
+        device_info = await self._request("get", f"{API_V2_BASE}/devices/{device_id}")
         _normalize_telemetry(device_info)
         return device_info
 
@@ -82,5 +80,8 @@ def _normalize_telemetry(device_info: dict) -> None:
     if not isinstance(current, dict):
         return
     temperature = current.get("tempF")
-    if isinstance(temperature, (int, float)) and temperature >= IMPLAUSIBLE_WATER_TEMP_F:
+    if (
+        isinstance(temperature, (int, float))
+        and temperature >= IMPLAUSIBLE_WATER_TEMP_F
+    ):
         current["tempF"] = None
