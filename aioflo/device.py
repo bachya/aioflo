@@ -40,28 +40,52 @@ class Device:  # pylint: disable=too-few-public-methods
     async def open_valve(self, device_id: str) -> dict:
         """Open the valve for a specific device.
 
+        `telemetry.current.tempF` is normalized to ``None`` when the device
+        reports the no-sensor placeholder; see :func:`_normalize_telemetry`.
+
         :param device_id: Unique identifier for the device
         :type device_id: ``str``
         :rtype: ``dict``
         """
-        return await self._request(
+        device_info = await self._request(
             "post",
             f"{API_V2_BASE}/devices/{device_id}",
             json={"valve": {"target": "open"}},
         )
+        _normalize_telemetry(device_info)
+        return device_info
 
     async def close_valve(self, device_id: str) -> dict:
         """Close the valve for a specific device.
+
+        `telemetry.current.tempF` is normalized to ``None`` when the device
+        reports the no-sensor placeholder; see :func:`_normalize_telemetry`.
 
         :param device_id: Unique identifier for the device
         :type device_id: ``str``
         :rtype: ``dict``
         """
-        return await self._request(
+        device_info = await self._request(
             "post",
             f"{API_V2_BASE}/devices/{device_id}",
             json={"valve": {"target": "closed"}},
         )
+        _normalize_telemetry(device_info)
+        return device_info
+
+
+def _clear_implausible_temp(values: dict, key: str) -> None:
+    """Replace a no-sensor placeholder in ``values[key]`` with ``None``.
+
+    ``key`` is ``tempF`` on a device's current telemetry and ``averageTempF``
+    on a metrics bucket. The cutoff is boiling; see ``_normalize_telemetry``.
+    """
+    temperature = values.get(key)
+    if (
+        isinstance(temperature, (int, float))
+        and temperature >= IMPLAUSIBLE_WATER_TEMP_F
+    ):
+        values[key] = None
 
 
 def _normalize_telemetry(device_info: dict) -> None:
@@ -79,9 +103,4 @@ def _normalize_telemetry(device_info: dict) -> None:
     current = (device_info.get("telemetry") or {}).get("current")
     if not isinstance(current, dict):
         return
-    temperature = current.get("tempF")
-    if (
-        isinstance(temperature, (int, float))
-        and temperature >= IMPLAUSIBLE_WATER_TEMP_F
-    ):
-        current["tempF"] = None
+    _clear_implausible_temp(current, "tempF")

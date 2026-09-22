@@ -211,3 +211,49 @@ async def test_get_device_info_without_a_temperature_reading(
         device_info = await api.device.get_info(TEST_DEVICE_ID)
         assert device_info.get("telemetry") == telemetry
         assert device_info["nickname"] == "Smart Water Shutoff"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("valve_method", "fixture_name"),
+    [
+        ("open_valve", "device_open_valve_response.json"),
+        ("close_valve", "device_close_valve_response.json"),
+    ],
+)
+@pytest.mark.parametrize("reading", [225, 212, 211.9, 70])
+async def test_valve_command_normalizes_temperature(
+    aresponses,
+    auth_success_response,
+    valve_method,
+    fixture_name,
+    reading,
+):
+    """Valve responses carry the same telemetry placeholder as device info."""
+    device_info_payload = json.loads(load_fixture(fixture_name))
+    current = device_info_payload["telemetry"]["current"]
+    current["tempF"] = reading
+    psi = current["psi"]
+
+    aresponses.add(
+        "api.meetflo.com",
+        "/api/v1/users/auth",
+        "post",
+        aresponses.Response(text=json.dumps(auth_success_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/devices/98765",
+        "post",
+        aresponses.Response(text=json.dumps(device_info_payload), status=200),
+    )
+
+    async with aiohttp.ClientSession() as session:
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
+        device_info = await getattr(api.device, valve_method)(TEST_DEVICE_ID)
+        temperature = device_info["telemetry"]["current"]["tempF"]
+        if reading >= 212:
+            assert temperature is None
+        else:
+            assert temperature == reading
+        assert device_info["telemetry"]["current"]["psi"] == psi

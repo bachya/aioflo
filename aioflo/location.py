@@ -3,6 +3,7 @@
 from collections.abc import Awaitable, Callable
 
 from .const import API_V2_BASE
+from .device import _normalize_telemetry
 from .util import raise_on_invalid_argument
 
 SYSTEM_MODE_AWAY = "away"
@@ -43,6 +44,9 @@ class Location:
     ) -> dict:
         """Return location data.
 
+        Expanded devices have ``telemetry.current.tempF`` set to ``None``
+        when it is the no-sensor placeholder.
+
         :param location_id: A Flo location UUID
         :type location_id: ``str``
         :param include_device_info: Include expanded device information
@@ -57,9 +61,15 @@ class Location:
         if additional_info:
             params["expand"] = ",".join(additional_info)
 
-        return await self._request(
+        location_info = await self._request(
             "get", f"{API_V2_BASE}/locations/{location_id}", params=params
         )
+        devices = location_info.get("devices")
+        if isinstance(devices, list):
+            for device in devices:
+                if isinstance(device, dict):
+                    _normalize_telemetry(device)
+        return location_info
 
     async def set_mode_away(self, location_id: str) -> None:
         """Set the system mode to "Away".

@@ -52,6 +52,45 @@ async def test_get_location_info(aresponses, auth_success_response):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("reading", [225, 212, 211.9, 70])
+async def test_location_expand_normalizes_device_temperature(
+    aresponses, auth_success_response, reading
+):
+    """Expanded location devices use the same temperature placeholder."""
+    location_payload = json.loads(
+        load_fixture("location_info_expand_devices_response.json")
+    )
+    current = location_payload["devices"][0]["telemetry"]["current"]
+    current["tempF"] = reading
+    psi = current["psi"]
+
+    aresponses.add(
+        "api.meetflo.com",
+        "/api/v1/users/auth",
+        "post",
+        aresponses.Response(text=json.dumps(auth_success_response), status=200),
+    )
+    aresponses.add(
+        "api-gw.meetflo.com",
+        "/api/v2/locations/mmnnoopp",
+        "get",
+        aresponses.Response(text=json.dumps(location_payload), status=200),
+    )
+
+    async with aiohttp.ClientSession() as session:
+        api = await async_get_api(TEST_EMAIL_ADDRESS, TEST_PASSWORD, session=session)
+        location_info = await api.location.get_info(
+            TEST_LOCATION_ID, include_device_info=True
+        )
+        temperature = location_info["devices"][0]["telemetry"]["current"]["tempF"]
+        if reading >= 212:
+            assert temperature is None
+        else:
+            assert temperature == reading
+        assert location_info["devices"][0]["telemetry"]["current"]["psi"] == psi
+
+
+@pytest.mark.asyncio
 async def test_system_modes(aresponses, auth_success_response):
     """Test setting system modes.
 
