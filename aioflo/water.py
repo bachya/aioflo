@@ -4,6 +4,7 @@ from collections.abc import Awaitable, Callable
 from datetime import datetime
 
 from .const import API_V2_BASE
+from .device import _clear_implausible_temp
 from .util import raise_on_invalid_argument
 
 INTERVAL_DAILY = "1d"
@@ -67,6 +68,9 @@ class Water:  # pylint: disable=too-few-public-methods
     ) -> dict:
         """Return water usage metrics for a device.
 
+        ``averageTempF`` is set to ``None`` when a bucket holds the no-sensor
+        placeholder.
+
         :param device_mac_address: MAC address of the Flo device
         :type device_mac_address: ``str``
         :param start: The start datetime of the range to examine
@@ -79,7 +83,7 @@ class Water:  # pylint: disable=too-few-public-methods
         """
         raise_on_invalid_argument(interval, INTERVALS)
 
-        return await self._request(
+        metrics = await self._request(
             "get",
             f"{API_V2_BASE}/water/metrics",
             params={
@@ -89,3 +93,9 @@ class Water:  # pylint: disable=too-few-public-methods
                 "startDate": start.isoformat(),
             },
         )
+        items = metrics.get("items")
+        if isinstance(items, list):
+            for item in items:
+                if isinstance(item, dict):
+                    _clear_implausible_temp(item, "averageTempF")
+        return metrics
