@@ -72,6 +72,17 @@ async def main() -> None:
         device_mac_address=first_device["macAddress"],
     )
 
+    # Optionally forward a timezone string as the API's tz query parameter.
+    # timezone is keyword-only, works with or without device_mac_address, and
+    # does not change start/end datetime serialization. Omit it (or pass None)
+    # to leave tz out of the request:
+    consumption_with_timezone = await api.water.get_consumption_info(
+        a_location_id,
+        datetime(2020, 1, 16, 0, 0),
+        datetime(2020, 1, 16, 23, 59, 59, 999000),
+        timezone="America/Denver",
+    )
+
     # Get various other metrics related to water usage:
     metrics = await api.water.get_metrics(
         first_device["macAddress"],
