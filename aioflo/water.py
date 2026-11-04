@@ -27,6 +27,8 @@ class Water:  # pylint: disable=too-few-public-methods
         end: datetime,
         interval: str = INTERVAL_HOURLY,
         device_mac_address: str | None = None,
+        *,
+        timezone: str | None = None,
     ) -> dict:
         """Return water consumption data.
 
@@ -40,6 +42,9 @@ class Water:  # pylint: disable=too-few-public-methods
         :type interval: ``str``
         :param device_mac_address: Limit results to a single device at the location
         :type device_mac_address: ``Optional[str]``
+        :param timezone: Optional timezone string forwarded as the ``tz`` query
+            parameter; does not change datetime serialization
+        :type timezone: ``Optional[str]``
         :rtype: ``dict``
         """
         raise_on_invalid_argument(interval, INTERVALS)
@@ -52,6 +57,8 @@ class Water:  # pylint: disable=too-few-public-methods
         }
         if device_mac_address:
             params["macAddress"] = device_mac_address.replace(":", "")
+        if timezone is not None:
+            params["tz"] = timezone
 
         return await self._request(
             "get",
