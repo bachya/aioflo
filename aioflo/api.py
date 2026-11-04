@@ -61,7 +61,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         :type use_sso: ``bool``
         """
         self._password: str = password
-        self._session: ClientSession = session
+        self._session: ClientSession | None = session
         self._token: str | None = None
         self._token_expiration: datetime | None = None
         self._refresh_token: str | None = None
@@ -124,6 +124,7 @@ class API:  # pylint: disable=too-few-public-methods,too-many-instance-attribute
         use_running_session = self._session and not self._session.closed
 
         if use_running_session:
+            assert self._session is not None
             session = self._session
         else:
             session = ClientSession(timeout=ClientTimeout(total=DEFAULT_TIMEOUT))
